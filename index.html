@@ -33,47 +33,47 @@
   <script type="text/babel">
     const { useState, useMemo } = React;
 
-    // --- DATA TRANSCRIPTION ---
+    // --- DATA TRANSCRIPTION WITH CPT/DEST & POST CODES ---
     const postsData = [
-      { id: 'aso_css', name: 'ASO', department: 'DoPT (CSS)', vacancies: 74, payLevel: 7, jobType: 'Desk', posting: 'Delhi' },
-      { id: 'aso_mea', name: 'ASO', department: 'Ministry of External Affairs', vacancies: 6, payLevel: 7, jobType: 'Desk', posting: 'Delhi' },
-      { id: 'aso_afhq', name: 'ASO', department: 'Ministry of Defence (AFHQ)', vacancies: 9, payLevel: 7, jobType: 'Desk', posting: 'Delhi' },
-      { id: 'aso_railways', name: 'ASO', department: 'Railways', vacancies: 4, payLevel: 7, jobType: 'Desk', posting: 'Delhi' },
-      { id: 'aso_ib', name: 'ASO', department: 'Intelligence Bureau', vacancies: 19, payLevel: 7, jobType: 'Desk', posting: 'All India' },
-      { id: 'aso_epfo', name: 'ASO', department: 'EPFO', vacancies: 5, payLevel: 7, jobType: 'Desk', posting: 'All India' },
-      { id: 'aso_nic', name: 'ASO', department: 'NIC', vacancies: 0, payLevel: 7, jobType: 'Desk', posting: 'Delhi' },
-      { id: 'aso_cat', name: 'ASO', department: 'CAT', vacancies: 0, payLevel: 7, jobType: 'Desk', posting: 'All India' },
-      { id: 'aso_eci', name: 'ASO', department: 'Election Commission', vacancies: 0, payLevel: 7, jobType: 'Desk', posting: 'Delhi' },
-      { id: 'aso_meity', name: 'ASO', department: 'MeitY', vacancies: 1, payLevel: 7, jobType: 'Desk', posting: 'Delhi' },
-      { id: 'gst_inspector', name: 'GST Inspector', department: 'CBIC', vacancies: 82, payLevel: 7, jobType: 'Field/Uniform', posting: 'All India', hasCadreBreakdown: true },
-      { id: 'po', name: 'Preventive Officer', department: 'CBIC', vacancies: 20, payLevel: 7, jobType: 'Field/Uniform', posting: 'Coastal/All India', hasCadreBreakdown: true },
-      { id: 'examiner', name: 'Examiner', department: 'CBIC', vacancies: 24, payLevel: 7, jobType: 'Field/Desk Mix', posting: 'Coastal/All India', hasCadreBreakdown: true },
-      { id: 'iti', name: 'Income Tax Inspector', department: 'CBDT', vacancies: 37, payLevel: 7, jobType: 'Field/Desk Mix', posting: 'All India', hasCadreBreakdown: true },
-      { id: 'ip', name: 'Inspector of Posts', department: 'Postal', vacancies: 3, payLevel: 7, jobType: 'Field', posting: 'All India' },
-      { id: 'si_cbi', name: 'Sub-Inspector', department: 'CBI', vacancies: 5, payLevel: 7, jobType: 'Field/Uniform', posting: 'All India' },
-      { id: 'si_nia', name: 'Sub-Inspector', department: 'NIA', vacancies: 1, payLevel: 6, jobType: 'Field/Uniform', posting: 'All India' },
-      { id: 'si_ncb', name: 'Sub-Inspector', department: 'NCB', vacancies: 7, payLevel: 6, jobType: 'Field/Uniform', posting: 'All India' },
-      { id: 'aeo', name: 'Assistant Enforcement Officer', department: 'ED', vacancies: 2, payLevel: 7, jobType: 'Field', posting: 'All India' },
-      { id: 'ea', name: 'Executive Assistant', department: 'CBIC', vacancies: 12, payLevel: 6, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true },
-      { id: 'asst_mines', name: 'Assistant', department: 'Ministry of Mines', vacancies: 2, payLevel: 6, jobType: 'Desk', posting: 'Delhi' },
-      { id: 'asst_icg', name: 'Assistant', department: 'Indian Coast Guard', vacancies: 1, payLevel: 6, jobType: 'Desk', posting: 'Coastal/Delhi' },
-      { id: 'asst_ncb', name: 'Assistant', department: 'NCB', vacancies: 1, payLevel: 6, jobType: 'Desk', posting: 'All India' },
-      { id: 'sec_head', name: 'Section Head', department: 'DGFT', vacancies: 5, payLevel: 6, jobType: 'Desk', posting: 'All India' },
-      { id: 'stat_inv', name: 'Statistical Investigator', department: 'MoSPI', vacancies: 12, payLevel: 6, jobType: 'Field/Desk Mix', posting: 'All India' },
-      { id: 'jso', name: 'Junior Statistical Officer', department: 'MoSPI', vacancies: 15, payLevel: 6, jobType: 'Desk', posting: 'All India' },
-      { id: 'os', name: 'Office Superintendent', department: 'CBDT', vacancies: 498, payLevel: 6, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true },
-      { id: 'auditor_cgda', name: 'Auditor', department: 'CGDA', vacancies: 88, payLevel: 5, jobType: 'Desk', posting: 'All India' },
-      { id: 'acct_cag', name: 'Accountant / Jr Accountant', department: 'CAG', vacancies: 17, payLevel: 5, jobType: 'Desk', posting: 'All India' },
-      { id: 'acct_postal', name: 'Accountant', department: 'Postal', vacancies: 6, payLevel: 5, jobType: 'Desk', posting: 'All India' },
-      { id: 'acct_cgca', name: 'Accountant', department: 'CGCA', vacancies: 3, payLevel: 5, jobType: 'Desk', posting: 'All India' },
-      { id: 'ta_cbic', name: 'Tax Assistant', department: 'GST Dept (CBIC)', vacancies: 82, payLevel: 4, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true },
-      { id: 'ta_cbdt', name: 'Tax Assistant', department: 'Income Tax (CBDT)', vacancies: 78, payLevel: 4, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true },
-      { id: 'udc_msme', name: 'UDC / SSA', department: 'MSME', vacancies: 5, payLevel: 4, jobType: 'Desk', posting: 'All India' },
-      { id: 'udc_dst', name: 'UDC / SSA', department: 'Science & Tech', vacancies: 4, payLevel: 4, jobType: 'Desk', posting: 'Delhi' },
-      { id: 'udc_mines', name: 'UDC / SSA', department: 'Mines', vacancies: 3, payLevel: 4, jobType: 'Desk', posting: 'Delhi' },
-      { id: 'udc_dgde', name: 'UDC / SSA', department: 'Defence Estates', vacancies: 1, payLevel: 4, jobType: 'Desk', posting: 'All India' },
-      { id: 'udc_meity', name: 'UDC / SSA', department: 'MeitY', vacancies: 1, payLevel: 4, jobType: 'Desk', posting: 'Delhi' },
-      { id: 'udc_textiles', name: 'UDC / SSA', department: 'Textiles', vacancies: 1, payLevel: 4, jobType: 'Desk', posting: 'All India' },
+      { id: 'aso_css', postCode: 'B16', name: 'ASO', department: 'DoPT (CSS)', vacancies: 74, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'CPT' },
+      { id: 'aso_mea', postCode: 'B09', name: 'ASO', department: 'Ministry of External Affairs', vacancies: 6, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'CPT' },
+      { id: 'aso_afhq', postCode: 'B17', name: 'ASO', department: 'Ministry of Defence (AFHQ)', vacancies: 9, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'CPT' },
+      { id: 'aso_railways', postCode: 'B14', name: 'ASO', department: 'Railways', vacancies: 4, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'NA' },
+      { id: 'aso_ib', postCode: 'B12', name: 'ASO', department: 'Intelligence Bureau', vacancies: 19, payLevel: 7, jobType: 'Desk', posting: 'All India', cpt: 'NA' },
+      { id: 'aso_epfo', postCode: 'B03', name: 'ASO', department: 'EPFO', vacancies: 5, payLevel: 7, jobType: 'Desk', posting: 'All India', cpt: 'NA' },
+      { id: 'aso_nic', postCode: 'B06', name: 'ASO', department: 'NIC', vacancies: 0, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'NA' },
+      { id: 'aso_cat', postCode: 'B07', name: 'ASO', department: 'CAT', vacancies: 0, payLevel: 7, jobType: 'Desk', posting: 'All India', cpt: 'NA' },
+      { id: 'aso_eci', postCode: 'B10', name: 'ASO', department: 'Election Commission', vacancies: 0, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'NA' },
+      { id: 'aso_meity', postCode: 'B11', name: 'ASO', department: 'MeitY', vacancies: 1, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'NA' },
+      { id: 'gst_inspector', postCode: 'B04', name: 'GST Inspector', department: 'CBIC', vacancies: 82, payLevel: 7, jobType: 'Field/Uniform', posting: 'All India', hasCadreBreakdown: true, cpt: 'CPT' },
+      { id: 'po', postCode: 'B02', name: 'Preventive Officer', department: 'CBIC', vacancies: 20, payLevel: 7, jobType: 'Field/Uniform', posting: 'Coastal/All India', hasCadreBreakdown: true, cpt: 'CPT' },
+      { id: 'examiner', postCode: 'B01', name: 'Examiner', department: 'CBIC', vacancies: 24, payLevel: 7, jobType: 'Field/Desk Mix', posting: 'Coastal/All India', hasCadreBreakdown: true, cpt: 'CPT' },
+      { id: 'iti', postCode: 'B15', name: 'Income Tax Inspector', department: 'CBDT', vacancies: 37, payLevel: 7, jobType: 'Field/Desk Mix', posting: 'All India', hasCadreBreakdown: true, cpt: 'NA' },
+      { id: 'ip', postCode: 'B19', name: 'Inspector of Posts', department: 'Postal', vacancies: 3, payLevel: 7, jobType: 'Field', posting: 'All India', cpt: 'NA' },
+      { id: 'si_cbi', postCode: 'B13', name: 'Sub-Inspector', department: 'CBI', vacancies: 5, payLevel: 7, jobType: 'Field/Uniform', posting: 'All India', cpt: 'NA' },
+      { id: 'si_nia', postCode: 'B31', name: 'Sub-Inspector', department: 'NIA', vacancies: 1, payLevel: 6, jobType: 'Field/Uniform', posting: 'All India', cpt: 'NA' },
+      { id: 'si_ncb', postCode: 'B30', name: 'Sub-Inspector', department: 'NCB', vacancies: 7, payLevel: 6, jobType: 'Field/Uniform', posting: 'All India', cpt: 'NA' },
+      { id: 'aeo', postCode: 'B05', name: 'Assistant Enforcement Officer', department: 'ED', vacancies: 2, payLevel: 7, jobType: 'Field', posting: 'All India', cpt: 'NA' },
+      { id: 'ea', postCode: 'B20', name: 'Executive Assistant', department: 'CBIC', vacancies: 12, payLevel: 6, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true, cpt: 'CPT' },
+      { id: 'asst_mines', postCode: 'B25', name: 'Assistant', department: 'Ministry of Mines', vacancies: 2, payLevel: 6, jobType: 'Desk', posting: 'Delhi', cpt: 'CPT' },
+      { id: 'asst_icg', postCode: 'B27', name: 'Assistant', department: 'Indian Coast Guard', vacancies: 1, payLevel: 6, jobType: 'Desk', posting: 'Coastal/Delhi', cpt: 'NA' },
+      { id: 'asst_ncb', postCode: 'B29', name: 'Assistant', department: 'NCB', vacancies: 1, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'NA' },
+      { id: 'sec_head', postCode: 'B34', name: 'Section Head', department: 'DGFT', vacancies: 5, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'CPT' },
+      { id: 'stat_inv', postCode: 'C36', name: 'Statistical Investigator', department: 'MoSPI', vacancies: 12, payLevel: 6, jobType: 'Field/Desk Mix', posting: 'All India', cpt: 'NA' },
+      { id: 'jso', postCode: 'C37', name: 'Junior Statistical Officer', department: 'MoSPI', vacancies: 15, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'NA' },
+      { id: 'os', postCode: 'B33', name: 'Office Superintendent', department: 'CBDT', vacancies: 498, payLevel: 6, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true, cpt: 'NA' },
+      { id: 'auditor_cgda', postCode: 'D39', name: 'Auditor', department: 'CGDA', vacancies: 88, payLevel: 5, jobType: 'Desk', posting: 'All India', cpt: 'NA' },
+      { id: 'acct_cag', postCode: 'D38', name: 'Accountant / Jr Accountant', department: 'CAG', vacancies: 17, payLevel: 5, jobType: 'Desk', posting: 'All India', cpt: 'NA' },
+      { id: 'acct_postal', postCode: 'D40', name: 'Accountant', department: 'Postal', vacancies: 6, payLevel: 5, jobType: 'Desk', posting: 'All India', cpt: 'NA' },
+      { id: 'acct_cgca', postCode: 'D41', name: 'Accountant', department: 'CGCA', vacancies: 3, payLevel: 5, jobType: 'Desk', posting: 'All India', cpt: 'NA' },
+      { id: 'ta_cbic', postCode: 'D43', name: 'Tax Assistant', department: 'GST Dept (CBIC)', vacancies: 82, payLevel: 4, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true, cpt: 'DEST' },
+      { id: 'ta_cbdt', postCode: 'D55', name: 'Tax Assistant', department: 'Income Tax (CBDT)', vacancies: 78, payLevel: 4, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true, cpt: 'DEST' },
+      { id: 'udc_msme', postCode: 'D42', name: 'UDC / SSA', department: 'MSME', vacancies: 5, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'NA' },
+      { id: 'udc_dst', postCode: 'D44', name: 'UDC / SSA', department: 'Science & Tech', vacancies: 4, payLevel: 4, jobType: 'Desk', posting: 'Delhi', cpt: 'NA' },
+      { id: 'udc_mines', postCode: 'D47', name: 'UDC / SSA', department: 'Mines', vacancies: 3, payLevel: 4, jobType: 'Desk', posting: 'Delhi', cpt: 'NA' },
+      { id: 'udc_dgde', postCode: 'D48', name: 'UDC / SSA', department: 'Defence Estates', vacancies: 1, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'NA' },
+      { id: 'udc_meity', postCode: 'D49', name: 'UDC / SSA', department: 'MeitY', vacancies: 1, payLevel: 4, jobType: 'Desk', posting: 'Delhi', cpt: 'DEST' },
+      { id: 'udc_textiles', postCode: 'D50', name: 'UDC / SSA', department: 'Textiles', vacancies: 1, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'NA' },
     ];
 
     const cadreDataMap = {
@@ -192,6 +192,7 @@
       const [jobTypeFilter, setJobTypeFilter] = useState('All');
       const [payLevelFilter, setPayLevelFilter] = useState('All');
       const [locationFilter, setLocationFilter] = useState('All');
+      const [cptFilter, setCptFilter] = useState('All');
       const [hideZeroVacancies, setHideZeroVacancies] = useState(true);
 
       // Preference List
@@ -207,13 +208,14 @@
           if (hideZeroVacancies && post.vacancies === 0) return false;
           if (jobTypeFilter !== 'All' && !post.jobType.includes(jobTypeFilter)) return false;
           if (payLevelFilter !== 'All' && post.payLevel.toString() !== payLevelFilter) return false;
+          if (cptFilter !== 'All' && post.cpt !== cptFilter) return false;
           if (locationFilter !== 'All') {
             if (locationFilter === 'Delhi Only' && !post.posting.includes('Delhi')) return false;
             if (locationFilter === 'All India' && post.posting === 'Delhi') return false; 
           }
           return true;
         });
-      }, [jobTypeFilter, payLevelFilter, locationFilter, hideZeroVacancies]);
+      }, [jobTypeFilter, payLevelFilter, locationFilter, cptFilter, hideZeroVacancies]);
 
       // --- HANDLERS ---
       const addToPreferences = (post) => {
@@ -239,7 +241,7 @@
       };
 
       const copyToClipboard = () => {
-        const text = preferences.map((p, i) => `${i + 1}. ${p.name} (${p.department}) - Level ${p.payLevel}`).join('\n');
+        const text = preferences.map((p, i) => `${i + 1}. [${p.postCode}] ${p.name} (${p.department}) - Level ${p.payLevel}`).join('\n');
         
         // Robust fallback for copying in standard web environments
         const textArea = document.createElement("textarea");
@@ -321,10 +323,10 @@
                       Filter Posts
                     </h2>
                     
-                    <div className="space-y-6">
+                    <div className="space-y-5">
                       {/* Job Type Filter */}
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">Job Type</label>
+                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">Job Type</label>
                         <select 
                           value={jobTypeFilter} 
                           onChange={(e) => setJobTypeFilter(e.target.value)}
@@ -340,7 +342,7 @@
 
                       {/* Pay Level Filter */}
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">Pay Level (Grade Pay)</label>
+                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">Pay Level (Grade Pay)</label>
                         <select 
                           value={payLevelFilter} 
                           onChange={(e) => setPayLevelFilter(e.target.value)}
@@ -354,9 +356,24 @@
                         </select>
                       </div>
 
+                      {/* CPT / DEST Filter */}
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">Computer/Typing Requirement</label>
+                        <select 
+                          value={cptFilter} 
+                          onChange={(e) => setCptFilter(e.target.value)}
+                          className="w-full rounded-lg border-slate-300 border py-2 px-3 text-sm focus:ring-blue-500 focus:border-blue-500 bg-slate-50"
+                        >
+                          <option value="All">All</option>
+                          <option value="CPT">CPT Required</option>
+                          <option value="DEST">DEST Required</option>
+                          <option value="NA">No CPT/DEST (NA)</option>
+                        </select>
+                      </div>
+
                       {/* Location Filter */}
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">Posting Preference</label>
+                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">Posting Preference</label>
                         <select 
                           value={locationFilter} 
                           onChange={(e) => setLocationFilter(e.target.value)}
@@ -369,7 +386,7 @@
                       </div>
 
                       {/* Toggle Zero Vacancies */}
-                      <div className="flex items-center">
+                      <div className="flex items-center mt-2">
                         <input 
                           type="checkbox" 
                           id="hideZero" 
@@ -431,7 +448,10 @@
                               
                               {/* Title & Vacancy Badge */}
                               <div className="flex-grow">
-                                <h3 className="text-lg font-bold text-slate-800 leading-tight mb-1">{post.name}</h3>
+                                <h3 className="text-lg font-bold text-slate-800 leading-tight mb-1">
+                                  <span className="bg-slate-800 text-white text-[10px] font-bold px-1.5 py-0.5 rounded mr-1.5 align-middle shadow-sm tracking-wider">{post.postCode}</span>
+                                  {post.name}
+                                </h3>
                                 <div className="flex items-center justify-between">
                                   <p className="text-xs font-semibold text-slate-500 line-clamp-1" title={post.department}>
                                     {post.department}
@@ -451,6 +471,9 @@
                               </span>
                               <span className={`inline-flex items-center gap-1.5 bg-white/60 ${theme.badgeText} text-xs font-medium px-2 py-1 rounded shadow-sm border border-white`}>
                                 <i className="fa-solid fa-shield-halved opacity-50"></i> {post.jobType}
+                              </span>
+                              <span className={`inline-flex items-center gap-1.5 bg-white/60 text-slate-700 text-xs font-medium px-2 py-1 rounded shadow-sm border border-white`}>
+                                <i className="fa-solid fa-desktop opacity-50"></i> {post.cpt}
                               </span>
                               <span className={`inline-flex items-center gap-1.5 bg-white/60 text-slate-700 text-xs font-medium px-2 py-1 rounded shadow-sm border border-white`}>
                                 <i className="fa-solid fa-map-marker-alt opacity-50"></i> {post.posting}
@@ -494,7 +517,7 @@
                       <div className="col-span-full py-12 text-center text-slate-500 bg-white rounded-xl border border-slate-200 border-dashed">
                         <i className="fa-solid fa-circle-info text-4xl text-slate-300 mb-3 block"></i>
                         <p>No posts match your selected filters.</p>
-                        <button onClick={() => {setJobTypeFilter('All'); setPayLevelFilter('All'); setLocationFilter('All');}} className="mt-4 text-blue-600 hover:underline">Clear Filters</button>
+                        <button onClick={() => {setJobTypeFilter('All'); setPayLevelFilter('All'); setLocationFilter('All'); setCptFilter('All');}} className="mt-4 text-blue-600 hover:underline">Clear Filters</button>
                       </div>
                     )}
                   </div>
@@ -560,8 +583,11 @@
 
                               {/* Post Details */}
                               <div className="flex-grow relative z-10">
-                                <h4 className="font-bold text-slate-800 leading-tight mb-1">{post.name}</h4>
-                                <p className="text-xs text-slate-500 font-medium">{post.department} &bull; Level {post.payLevel} &bull; <span className={theme.badgeText}>{post.jobType}</span></p>
+                                <h4 className="font-bold text-slate-800 leading-tight mb-1">
+                                  <span className="text-blue-600 font-bold mr-1.5 text-xs">[{post.postCode}]</span>
+                                  {post.name}
+                                </h4>
+                                <p className="text-xs text-slate-500 font-medium">{post.department} &bull; Level {post.payLevel} &bull; <span className={theme.badgeText}>{post.jobType}</span> &bull; {post.cpt}</p>
                               </div>
                               
                               {/* Action Buttons */}
