@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSC CGL Post Preference Tool</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Babel for compiling JSX in the browser -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* Custom Selection Color */
+    ::selection {
+      background-color: #bfdbfe; /* blue-200 */
+      color: #1e3a8a; /* blue-900 */
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans">
+  
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useMemo } = React;
+
+    // --- DATA TRANSCRIPTION ---
+    const postsData = [
+      { id: 'aso_css', name: 'ASO', department: 'DoPT (CSS)', vacancies: 74, payLevel: 7, jobType: 'Desk', posting: 'Delhi' },
+      { id: 'aso_mea', name: 'ASO', department: 'Ministry of External Affairs', vacancies: 6, payLevel: 7, jobType: 'Desk', posting: 'Delhi' },
+      { id: 'aso_afhq', name: 'ASO', department: 'Ministry of Defence (AFHQ)', vacancies: 9, payLevel: 7, jobType: 'Desk', posting: 'Delhi' },
+      { id: 'aso_railways', name: 'ASO', department: 'Railways', vacancies: 4, payLevel: 7, jobType: 'Desk', posting: 'Delhi' },
+      { id: 'aso_ib', name: 'ASO', department: 'Intelligence Bureau', vacancies: 19, payLevel: 7, jobType: 'Desk', posting: 'All India' },
+      { id: 'aso_epfo', name: 'ASO', department: 'EPFO', vacancies: 5, payLevel: 7, jobType: 'Desk', posting: 'All India' },
+      { id: 'aso_nic', name: 'ASO', department: 'NIC', vacancies: 0, payLevel: 7, jobType: 'Desk', posting: 'Delhi' },
+      { id: 'aso_cat', name: 'ASO', department: 'CAT', vacancies: 0, payLevel: 7, jobType: 'Desk', posting: 'All India' },
+      { id: 'aso_eci', name: 'ASO', department: 'Election Commission', vacancies: 0, payLevel: 7, jobType: 'Desk', posting: 'Delhi' },
+      { id: 'aso_meity', name: 'ASO', department: 'MeitY', vacancies: 1, payLevel: 7, jobType: 'Desk', posting: 'Delhi' },
+      { id: 'gst_inspector', name: 'GST Inspector', department: 'CBIC', vacancies: 82, payLevel: 7, jobType: 'Field/Uniform', posting: 'All India', hasCadreBreakdown: true },
+      { id: 'po', name: 'Preventive Officer', department: 'CBIC', vacancies: 20, payLevel: 7, jobType: 'Field/Uniform', posting: 'Coastal/All India', hasCadreBreakdown: true },
+      { id: 'examiner', name: 'Examiner', department: 'CBIC', vacancies: 24, payLevel: 7, jobType: 'Field/Desk Mix', posting: 'Coastal/All India', hasCadreBreakdown: true },
+      { id: 'iti', name: 'Income Tax Inspector', department: 'CBDT', vacancies: 37, payLevel: 7, jobType: 'Field/Desk Mix', posting: 'All India', hasCadreBreakdown: true },
+      { id: 'ip', name: 'Inspector of Posts', department: 'Postal', vacancies: 3, payLevel: 7, jobType: 'Field', posting: 'All India' },
+      { id: 'si_cbi', name: 'Sub-Inspector', department: 'CBI', vacancies: 5, payLevel: 7, jobType: 'Field/Uniform', posting: 'All India' },
+      { id: 'si_nia', name: 'Sub-Inspector', department: 'NIA', vacancies: 1, payLevel: 6, jobType: 'Field/Uniform', posting: 'All India' },
+      { id: 'si_ncb', name: 'Sub-Inspector', department: 'NCB', vacancies: 7, payLevel: 6, jobType: 'Field/Uniform', posting: 'All India' },
+      { id: 'aeo', name: 'Assistant Enforcement Officer', department: 'ED', vacancies: 2, payLevel: 7, jobType: 'Field', posting: 'All India' },
+      { id: 'ea', name: 'Executive Assistant', department: 'CBIC', vacancies: 12, payLevel: 6, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true },
+      { id: 'asst_mines', name: 'Assistant', department: 'Ministry of Mines', vacancies: 2, payLevel: 6, jobType: 'Desk', posting: 'Delhi' },
+      { id: 'asst_icg', name: 'Assistant', department: 'Indian Coast Guard', vacancies: 1, payLevel: 6, jobType: 'Desk', posting: 'Coastal/Delhi' },
+      { id: 'asst_ncb', name: 'Assistant', department: 'NCB', vacancies: 1, payLevel: 6, jobType: 'Desk', posting: 'All India' },
+      { id: 'sec_head', name: 'Section Head', department: 'DGFT', vacancies: 5, payLevel: 6, jobType: 'Desk', posting: 'All India' },
+      { id: 'stat_inv', name: 'Statistical Investigator', department: 'MoSPI', vacancies: 12, payLevel: 6, jobType: 'Field/Desk Mix', posting: 'All India' },
+      { id: 'jso', name: 'Junior Statistical Officer', department: 'MoSPI', vacancies: 15, payLevel: 6, jobType: 'Desk', posting: 'All India' },
+      { id: 'os', name: 'Office Superintendent', department: 'CBDT', vacancies: 498, payLevel: 6, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true },
+      { id: 'auditor_cgda', name: 'Auditor', department: 'CGDA', vacancies: 88, payLevel: 5, jobType: 'Desk', posting: 'All India' },
+      { id: 'acct_cag', name: 'Accountant / Jr Accountant', department: 'CAG', vacancies: 17, payLevel: 5, jobType: 'Desk', posting: 'All India' },
+      { id: 'acct_postal', name: 'Accountant', department: 'Postal', vacancies: 6, payLevel: 5, jobType: 'Desk', posting: 'All India' },
+      { id: 'acct_cgca', name: 'Accountant', department: 'CGCA', vacancies: 3, payLevel: 5, jobType: 'Desk', posting: 'All India' },
+      { id: 'ta_cbic', name: 'Tax Assistant', department: 'GST Dept (CBIC)', vacancies: 82, payLevel: 4, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true },
+      { id: 'ta_cbdt', name: 'Tax Assistant', department: 'Income Tax (CBDT)', vacancies: 78, payLevel: 4, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true },
+      { id: 'udc_msme', name: 'UDC / SSA', department: 'MSME', vacancies: 5, payLevel: 4, jobType: 'Desk', posting: 'All India' },
+      { id: 'udc_dst', name: 'UDC / SSA', department: 'Science & Tech', vacancies: 4, payLevel: 4, jobType: 'Desk', posting: 'Delhi' },
+      { id: 'udc_mines', name: 'UDC / SSA', department: 'Mines', vacancies: 3, payLevel: 4, jobType: 'Desk', posting: 'Delhi' },
+      { id: 'udc_dgde', name: 'UDC / SSA', department: 'Defence Estates', vacancies: 1, payLevel: 4, jobType: 'Desk', posting: 'All India' },
+      { id: 'udc_meity', name: 'UDC / SSA', department: 'MeitY', vacancies: 1, payLevel: 4, jobType: 'Desk', posting: 'Delhi' },
+      { id: 'udc_textiles', name: 'UDC / SSA', department: 'Textiles', vacancies: 1, payLevel: 4, jobType: 'Desk', posting: 'All India' },
+    ];
+
+    const cadreDataMap = {
+      'gst_inspector': { 'Delhi': 1, 'Chandigarh': 2, 'Ahmedabad': 1, 'Jaipur': 0, 'Bhopal': 6, 'Lucknow': 4, 'Vadodara': 7, 'Mumbai': 0, 'Bangalore': 8, 'Bhubaneswar': 3, 'Chennai': 5, 'Patna': 0, 'Goa': 0, 'Guwahati': 7, 'Hyderabad': 12, 'Kolkata': 10, 'Ranchi': 8, 'Trivandrum': 9, 'Kochi': 0, 'Visakhapatnam': 0, 'Kanpur': 0, 'Nagpur': 0, 'Pune': 0 },
+      'examiner': { 'Delhi': 0, 'Chandigarh': 0, 'Ahmedabad': 0, 'Jaipur': 0, 'Bhopal': 0, 'Lucknow': 0, 'Vadodara': 0, 'Mumbai': 8, 'Bangalore': 0, 'Bhubaneswar': 0, 'Chennai': 8, 'Patna': 0, 'Goa': 3, 'Guwahati': 0, 'Hyderabad': 0, 'Kolkata': 2, 'Ranchi': 0, 'Trivandrum': 2, 'Kochi': 0, 'Visakhapatnam': 1, 'Kanpur': 0, 'Nagpur': 0, 'Pune': 0 },
+      'po': { 'Delhi': 0, 'Chandigarh': 0, 'Ahmedabad': 0, 'Jaipur': 0, 'Bhopal': 0, 'Lucknow': 0, 'Vadodara': 0, 'Mumbai': 4, 'Bangalore': 0, 'Bhubaneswar': 0, 'Chennai': 12, 'Patna': 0, 'Goa': 0, 'Guwahati': 0, 'Hyderabad': 0, 'Kolkata': 1, 'Ranchi': 0, 'Trivandrum': 3, 'Kochi': 0, 'Visakhapatnam': 0, 'Kanpur': 0, 'Nagpur': 0, 'Pune': 0 },
+      'iti': { 'Delhi': 3, 'Chandigarh': 3, 'Ahmedabad': 2, 'Jaipur': 2, 'Bhopal': 0, 'Lucknow': 0, 'Vadodara': 0, 'Mumbai': 8, 'Bangalore': 4, 'Bhubaneswar': 1, 'Chennai': 2, 'Patna': 3, 'Goa': 0, 'Guwahati': 1, 'Hyderabad': 2, 'Kolkata': 4, 'Ranchi': 0, 'Trivandrum': 0, 'Kochi': 1, 'Visakhapatnam': 0, 'Kanpur': 3, 'Nagpur': 0, 'Pune': 0 },
+      'ea': { 'Delhi': 0, 'Chandigarh': 0, 'Ahmedabad': 0, 'Jaipur': 0, 'Bhopal': 0, 'Lucknow': 0, 'Vadodara': 4, 'Mumbai': 2, 'Bangalore': 0, 'Bhubaneswar': 0, 'Chennai': 2, 'Patna': 0, 'Goa': 0, 'Guwahati': 0, 'Hyderabad': 0, 'Kolkata': 2, 'Ranchi': 2, 'Trivandrum': 0, 'Kochi': 0, 'Visakhapatnam': 0, 'Kanpur': 0, 'Nagpur': 0, 'Pune': 0 },
+      'ta_cbic': { 'Delhi': 1, 'Chandigarh': 6, 'Ahmedabad': 3, 'Jaipur': 4, 'Bhopal': 5, 'Lucknow': 1, 'Vadodara': 7, 'Mumbai': 11, 'Bangalore': 2, 'Bhubaneswar': 3, 'Chennai': 2, 'Patna': 0, 'Goa': 0, 'Guwahati': 0, 'Hyderabad': 1, 'Kolkata': 4, 'Ranchi': 0, 'Trivandrum': 2, 'Kochi': 0, 'Visakhapatnam': 0, 'Kanpur': 0, 'Nagpur': 0, 'Pune': 0 },
+      'ta_cbdt': { 'Delhi': 19, 'Chandigarh': 6, 'Ahmedabad': 12, 'Jaipur': 0, 'Bhopal': 6, 'Lucknow': 2, 'Vadodara': 0, 'Mumbai': 13, 'Bangalore': 9, 'Bhubaneswar': 2, 'Chennai': 2, 'Patna': 2, 'Goa': 0, 'Guwahati': 0, 'Hyderabad': 0, 'Kolkata': 0, 'Ranchi': 0, 'Trivandrum': 0, 'Kochi': 0, 'Visakhapatnam': 0, 'Kanpur': 2, 'Nagpur': 0, 'Pune': 2 },
+      'os': { 'Delhi': 64, 'Chandigarh': 47, 'Ahmedabad': 52, 'Jaipur': 10, 'Bhopal': 25, 'Lucknow': 14, 'Vadodara': 0, 'Mumbai': 126, 'Bangalore': 49, 'Bhubaneswar': 9, 'Chennai': 35, 'Patna': 8, 'Goa': 0, 'Guwahati': 0, 'Hyderabad': 18, 'Kolkata': 16, 'Ranchi': 0, 'Trivandrum': 0, 'Kochi': 11, 'Visakhapatnam': 0, 'Kanpur': 12, 'Nagpur': 0, 'Pune': 0 },
+    };
+
+    // Geographical mapping for North to South Sorting
+    const northToSouthOrder = {
+      'Chandigarh': 1,
+      'Delhi': 2,
+      'Jaipur': 3,
+      'Lucknow': 4,
+      'Kanpur': 5,
+      'Guwahati': 6,
+      'Patna': 7,
+      'Bhopal': 8,
+      'Ahmedabad': 9,
+      'Ranchi': 10,
+      'Kolkata': 11,
+      'Vadodara': 12,
+      'Nagpur': 13,
+      'Bhubaneswar': 14,
+      'Mumbai': 15,
+      'Pune': 16,
+      'Visakhapatnam': 17,
+      'Hyderabad': 18,
+      'Goa': 19,
+      'Bangalore': 20,
+      'Chennai': 21,
+      'Kochi': 22,
+      'Trivandrum': 23
+    };
+
+    // --- UI HELPERS ---
+    
+    // Assign specific icons based on department names
+    const getDeptIcon = (dept) => {
+      const lowerDept = dept.toLowerCase();
+      if (lowerDept.includes('railways')) return 'fa-train';
+      if (lowerDept.includes('cbi') || lowerDept.includes('nia') || lowerDept.includes('ncb') || lowerDept.includes('ib')) return 'fa-user-secret';
+      if (lowerDept.includes('cbic') || lowerDept.includes('cbdt') || lowerDept.includes('gst') || lowerDept.includes('income tax')) return 'fa-file-invoice-dollar';
+      if (lowerDept.includes('external affairs')) return 'fa-globe';
+      if (lowerDept.includes('postal')) return 'fa-envelopes-bulk';
+      if (lowerDept.includes('defence') || lowerDept.includes('afhq') || lowerDept.includes('coast guard')) return 'fa-jet-fighter';
+      if (lowerDept.includes('statistical') || lowerDept.includes('mospi')) return 'fa-chart-pie';
+      if (lowerDept.includes('mines')) return 'fa-helmet-safety';
+      if (lowerDept.includes('textiles')) return 'fa-shirt';
+      if (lowerDept.includes('election')) return 'fa-check-to-slot';
+      if (lowerDept.includes('cag') || lowerDept.includes('cgda')) return 'fa-calculator';
+      if (lowerDept.includes('ed') || lowerDept.includes('enforcement')) return 'fa-building-shield';
+      return 'fa-building-columns'; // Default government building
+    };
+
+    // Assign color themes based on Job Type
+    const getJobTypeTheme = (jobType) => {
+      switch (jobType) {
+        case 'Desk':
+          return {
+            bg: 'bg-blue-50/70',
+            border: 'border-blue-200',
+            accent: 'text-blue-600',
+            badgeBg: 'bg-blue-100',
+            badgeText: 'text-blue-800',
+            gradient: 'from-blue-100 to-transparent'
+          };
+        case 'Field/Uniform':
+          return {
+            bg: 'bg-emerald-50/70',
+            border: 'border-emerald-200',
+            accent: 'text-emerald-600',
+            badgeBg: 'bg-emerald-100',
+            badgeText: 'text-emerald-800',
+            gradient: 'from-emerald-100 to-transparent'
+          };
+        case 'Field/Desk Mix':
+          return {
+            bg: 'bg-purple-50/70',
+            border: 'border-purple-200',
+            accent: 'text-purple-600',
+            badgeBg: 'bg-purple-100',
+            badgeText: 'text-purple-800',
+            gradient: 'from-purple-100 to-transparent'
+          };
+        case 'Field':
+          return {
+            bg: 'bg-orange-50/70',
+            border: 'border-orange-200',
+            accent: 'text-orange-600',
+            badgeBg: 'bg-orange-100',
+            badgeText: 'text-orange-800',
+            gradient: 'from-orange-100 to-transparent'
+          };
+        default:
+          return {
+            bg: 'bg-slate-50',
+            border: 'border-slate-200',
+            accent: 'text-slate-600',
+            badgeBg: 'bg-slate-100',
+            badgeText: 'text-slate-800',
+            gradient: 'from-slate-100 to-transparent'
+          };
+      }
+    };
+
+    function App() {
+      const [activeTab, setActiveTab] = useState('browse'); // 'browse' or 'preferences'
+      
+      // Filters
+      const [jobTypeFilter, setJobTypeFilter] = useState('All');
+      const [payLevelFilter, setPayLevelFilter] = useState('All');
+      const [locationFilter, setLocationFilter] = useState('All');
+      const [hideZeroVacancies, setHideZeroVacancies] = useState(true);
+
+      // Preference List
+      const [preferences, setPreferences] = useState([]);
+      
+      // Modal State
+      const [selectedPost, setSelectedPost] = useState(null);
+      const [cadreSortType, setCadreSortType] = useState('vacancies'); // 'vacancies', 'alphabetical', 'northToSouth'
+
+      // --- FILTERING LOGIC ---
+      const filteredPosts = useMemo(() => {
+        return postsData.filter(post => {
+          if (hideZeroVacancies && post.vacancies === 0) return false;
+          if (jobTypeFilter !== 'All' && !post.jobType.includes(jobTypeFilter)) return false;
+          if (payLevelFilter !== 'All' && post.payLevel.toString() !== payLevelFilter) return false;
+          if (locationFilter !== 'All') {
+            if (locationFilter === 'Delhi Only' && !post.posting.includes('Delhi')) return false;
+            if (locationFilter === 'All India' && post.posting === 'Delhi') return false; 
+          }
+          return true;
+        });
+      }, [jobTypeFilter, payLevelFilter, locationFilter, hideZeroVacancies]);
+
+      // --- HANDLERS ---
+      const addToPreferences = (post) => {
+        if (!preferences.find(p => p.id === post.id)) {
+          setPreferences([...preferences, post]);
+        }
+      };
+
+      const removeFromPreferences = (postId) => {
+        setPreferences(preferences.filter(p => p.id !== postId));
+      };
+
+      const movePreference = (index, direction) => {
+        if (direction === 'up' && index > 0) {
+          const newPrefs = [...preferences];
+          [newPrefs[index - 1], newPrefs[index]] = [newPrefs[index], newPrefs[index - 1]];
+          setPreferences(newPrefs);
+        } else if (direction === 'down' && index < preferences.length - 1) {
+          const newPrefs = [...preferences];
+          [newPrefs[index + 1], newPrefs[index]] = [newPrefs[index], newPrefs[index + 1]];
+          setPreferences(newPrefs);
+        }
+      };
+
+      const copyToClipboard = () => {
+        const text = preferences.map((p, i) => `${i + 1}. ${p.name} (${p.department}) - Level ${p.payLevel}`).join('\n');
+        
+        // Robust fallback for copying in standard web environments
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          alert("Preference list copied to clipboard!");
+        } catch (err) {
+          console.error('Oops, unable to copy', err);
+          alert("Failed to copy. Please select the text manually.");
+        }
+        document.body.removeChild(textArea);
+      };
+
+      // --- CADRE SORTING LOGIC ---
+      const getSortedCadres = (postId) => {
+        if (!cadreDataMap[postId]) return [];
+        
+        let cadres = Object.entries(cadreDataMap[postId]).map(([name, count]) => ({ name, count }));
+        
+        // Filter out zero vacancies if checked 
+        cadres = cadres.filter(c => c.count > 0);
+
+        if (cadreSortType === 'vacancies') {
+          cadres.sort((a, b) => b.count - a.count);
+        } else if (cadreSortType === 'alphabetical') {
+          cadres.sort((a, b) => a.name.localeCompare(b.name));
+        } else if (cadreSortType === 'northToSouth') {
+          cadres.sort((a, b) => (northToSouthOrder[a.name] || 99) - (northToSouthOrder[b.name] || 99));
+        }
+        
+        return cadres;
+      };
+
+      return (
+        <div className="min-h-screen flex flex-col">
+          {/* HEADER */}
+          <header className="bg-gradient-to-r from-blue-900 to-indigo-800 text-white shadow-lg sticky top-0 z-30">
+            <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+                  <i className="fa-solid fa-award text-yellow-400"></i>
+                  SSC CGL Post Preference
+                </h1>
+                <p className="text-blue-200 text-sm mt-1">ST Category Vacancy Analysis Tool <span className="text-white font-medium ml-1 bg-white/20 px-2 py-0.5 rounded-full">by Abhishek jorwal</span></p>
+              </div>
+              
+              {/* Tabs */}
+              <div className="flex bg-white/10 p-1 rounded-lg backdrop-blur-sm">
+                <button 
+                  onClick={() => setActiveTab('browse')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'browse' ? 'bg-white text-blue-900 shadow-sm' : 'text-blue-100 hover:text-white hover:bg-white/10'}`}
+                >
+                  Browse Posts
+                </button>
+                <button 
+                  onClick={() => setActiveTab('preferences')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${activeTab === 'preferences' ? 'bg-white text-blue-900 shadow-sm' : 'text-blue-100 hover:text-white hover:bg-white/10'}`}
+                >
+                  <i className="fa-solid fa-list-ol"></i>
+                  My List {preferences.length > 0 && <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full shadow-sm border border-blue-500">{preferences.length}</span>}
+                </button>
+              </div>
+            </div>
+          </header>
+
+          <main className="flex-grow max-w-7xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8">
+            
+            {activeTab === 'browse' && (
+              <div className="flex flex-col lg:flex-row gap-8">
+                
+                {/* LEFT SIDEBAR: FILTERS */}
+                <div className="lg:w-1/4 flex-shrink-0">
+                  <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sticky top-28">
+                    <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                      <i className="fa-solid fa-arrow-trend-down text-blue-600"></i> 
+                      Filter Posts
+                    </h2>
+                    
+                    <div className="space-y-6">
+                      {/* Job Type Filter */}
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Job Type</label>
+                        <select 
+                          value={jobTypeFilter} 
+                          onChange={(e) => setJobTypeFilter(e.target.value)}
+                          className="w-full rounded-lg border-slate-300 border py-2 px-3 text-sm focus:ring-blue-500 focus:border-blue-500 bg-slate-50"
+                        >
+                          <option value="All">All Types</option>
+                          <option value="Desk">Desk Job Only</option>
+                          <option value="Field">Field Only</option>
+                          <option value="Field/Uniform">Field/Uniform</option>
+                          <option value="Field/Desk Mix">Field/Desk Mix</option>
+                        </select>
+                      </div>
+
+                      {/* Pay Level Filter */}
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Pay Level (Grade Pay)</label>
+                        <select 
+                          value={payLevelFilter} 
+                          onChange={(e) => setPayLevelFilter(e.target.value)}
+                          className="w-full rounded-lg border-slate-300 border py-2 px-3 text-sm focus:ring-blue-500 focus:border-blue-500 bg-slate-50"
+                        >
+                          <option value="All">All Levels</option>
+                          <option value="7">Level 7 (4600 GP)</option>
+                          <option value="6">Level 6 (4200 GP)</option>
+                          <option value="5">Level 5 (2800 GP)</option>
+                          <option value="4">Level 4 (2400 GP)</option>
+                        </select>
+                      </div>
+
+                      {/* Location Filter */}
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Posting Preference</label>
+                        <select 
+                          value={locationFilter} 
+                          onChange={(e) => setLocationFilter(e.target.value)}
+                          className="w-full rounded-lg border-slate-300 border py-2 px-3 text-sm focus:ring-blue-500 focus:border-blue-500 bg-slate-50"
+                        >
+                          <option value="All">Anywhere</option>
+                          <option value="Delhi Only">Delhi Only</option>
+                          <option value="All India">All India / Transferable</option>
+                        </select>
+                      </div>
+
+                      {/* Toggle Zero Vacancies */}
+                      <div className="flex items-center">
+                        <input 
+                          type="checkbox" 
+                          id="hideZero" 
+                          checked={hideZeroVacancies} 
+                          onChange={(e) => setHideZeroVacancies(e.target.checked)}
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor="hideZero" className="ml-2 block text-sm text-slate-700">
+                          Hide posts with 0 ST vacancies
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="mt-8 pt-6 border-t border-slate-100">
+                      <div className="bg-blue-50 rounded-lg p-4 text-sm text-blue-800">
+                        <p className="font-semibold mb-1">Total ST Vacancies in view:</p>
+                        <p className="text-2xl font-bold">{filteredPosts.reduce((acc, curr) => acc + curr.vacancies, 0)}</p>
+                      </div>
+                    </div>
+
+                    {/* Legend Helper */}
+                    <div className="mt-6 pt-4 border-t border-slate-100">
+                      <p className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Color Legend</p>
+                      <div className="space-y-2 text-xs">
+                        <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-blue-100 border border-blue-200 block"></span> Desk Job</div>
+                        <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-emerald-100 border border-emerald-200 block"></span> Field / Uniform</div>
+                        <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-purple-100 border border-purple-200 block"></span> Field / Desk Mix</div>
+                        <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-orange-100 border border-orange-200 block"></span> Field Job</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* MAIN CONTENT: POST LIST */}
+                <div className="lg:w-3/4">
+                  <div className="mb-4 flex justify-between items-center">
+                    <h2 className="text-xl font-bold text-slate-800">Available Posts ({filteredPosts.length})</h2>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {filteredPosts.map(post => {
+                      const isAdded = preferences.find(p => p.id === post.id);
+                      const theme = getJobTypeTheme(post.jobType);
+                      const deptIcon = getDeptIcon(post.department);
+                      
+                      return (
+                        <div key={post.id} className={`${theme.bg} rounded-xl shadow-sm border ${isAdded ? 'ring-2 ring-blue-500 shadow-md border-blue-300' : theme.border} p-5 hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group`}>
+                          
+                          {/* Decorative Background Icon */}
+                          <i className={`fa-solid ${deptIcon} absolute -bottom-6 -right-6 text-9xl opacity-[0.04] group-hover:opacity-[0.08] transition-opacity pointer-events-none ${theme.accent}`}></i>
+                          
+                          {/* Top Section */}
+                          <div className="relative z-10">
+                            <div className="flex justify-between items-start mb-3 gap-2">
+                              {/* Department Logo Badge */}
+                              <div className={`w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm border ${theme.badgeBg} ${theme.accent} border-white/50`}>
+                                <i className={`fa-solid ${deptIcon} text-xl`}></i>
+                              </div>
+                              
+                              {/* Title & Vacancy Badge */}
+                              <div className="flex-grow">
+                                <h3 className="text-lg font-bold text-slate-800 leading-tight mb-1">{post.name}</h3>
+                                <div className="flex items-center justify-between">
+                                  <p className="text-xs font-semibold text-slate-500 line-clamp-1" title={post.department}>
+                                    {post.department}
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              <span className="flex-shrink-0 inline-flex items-center bg-white text-slate-800 text-xs font-bold px-2 py-1 rounded border border-slate-200 shadow-sm">
+                                {post.vacancies} Posts
+                              </span>
+                            </div>
+                            
+                            {/* Tags */}
+                            <div className="flex flex-wrap gap-2 mb-4 mt-4">
+                              <span className={`inline-flex items-center gap-1.5 bg-white/60 text-slate-700 text-xs font-medium px-2 py-1 rounded shadow-sm border border-white`}>
+                                <i className="fa-solid fa-indian-rupee-sign opacity-50"></i> Level {post.payLevel}
+                              </span>
+                              <span className={`inline-flex items-center gap-1.5 bg-white/60 ${theme.badgeText} text-xs font-medium px-2 py-1 rounded shadow-sm border border-white`}>
+                                <i className="fa-solid fa-shield-halved opacity-50"></i> {post.jobType}
+                              </span>
+                              <span className={`inline-flex items-center gap-1.5 bg-white/60 text-slate-700 text-xs font-medium px-2 py-1 rounded shadow-sm border border-white`}>
+                                <i className="fa-solid fa-map-marker-alt opacity-50"></i> {post.posting}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          {/* Actions */}
+                          <div className="flex gap-2 mt-2 pt-4 border-t border-slate-200/60 relative z-10">
+                            {post.hasCadreBreakdown && post.vacancies > 0 ? (
+                              <button 
+                                onClick={() => setSelectedPost(post.id)}
+                                className="flex-1 bg-white hover:bg-slate-50 text-slate-700 font-medium py-2 rounded-lg text-sm transition-colors border border-slate-200 shadow-sm"
+                              >
+                                State Breakup
+                              </button>
+                            ) : (
+                              <div className="flex-1"></div> 
+                            )}
+                            
+                            <button 
+                              onClick={() => isAdded ? removeFromPreferences(post.id) : addToPreferences(post)}
+                              className={`flex-1 font-medium py-2 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 shadow-sm ${
+                                isAdded 
+                                  ? 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200' 
+                                  : 'bg-slate-800 text-white hover:bg-slate-900 border border-slate-800'
+                              }`}
+                            >
+                              {isAdded ? (
+                                <><i className="fa-solid fa-check"></i> Added</>
+                              ) : (
+                                <><i className="fa-solid fa-plus"></i> Add to List</>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    
+                    {filteredPosts.length === 0 && (
+                      <div className="col-span-full py-12 text-center text-slate-500 bg-white rounded-xl border border-slate-200 border-dashed">
+                        <i className="fa-solid fa-circle-info text-4xl text-slate-300 mb-3 block"></i>
+                        <p>No posts match your selected filters.</p>
+                        <button onClick={() => {setJobTypeFilter('All'); setPayLevelFilter('All'); setLocationFilter('All');}} className="mt-4 text-blue-600 hover:underline">Clear Filters</button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* PREFERENCE LIST TAB */}
+            {activeTab === 'preferences' && (
+              <div className="max-w-4xl mx-auto">
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                  <div className="bg-slate-50 border-b border-slate-200 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                      <h2 className="text-xl font-bold text-slate-800">Your Preference List</h2>
+                      <p className="text-sm text-slate-500 mt-1">Order your selected posts carefully. Top post is highest preference.</p>
+                    </div>
+                    <div className="flex gap-3">
+                      <button 
+                        onClick={copyToClipboard}
+                        className="flex items-center gap-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors"
+                      >
+                        <i className="fa-solid fa-copy"></i> Copy List
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="p-6">
+                    {preferences.length === 0 ? (
+                      <div className="text-center py-12">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 mb-4">
+                          <i className="fa-solid fa-list-ol text-2xl text-blue-500"></i>
+                        </div>
+                        <h3 className="text-lg font-medium text-slate-900 mb-1">Your list is empty</h3>
+                        <p className="text-slate-500 max-w-sm mx-auto mb-6">Go back to the Browse tab and add posts you are interested in.</p>
+                        <button 
+                          onClick={() => setActiveTab('browse')}
+                          className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm"
+                        >
+                          Browse Posts
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {preferences.map((post, index) => {
+                          const theme = getJobTypeTheme(post.jobType);
+                          const deptIcon = getDeptIcon(post.department);
+                          
+                          return (
+                            <div key={post.id} className={`flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl hover:shadow-md transition-shadow group relative overflow-hidden border-l-4 ${theme.border.replace('border-', 'border-l-')}`}>
+                              
+                              {/* Background Gradient flair based on job type */}
+                              <div className={`absolute top-0 left-0 bottom-0 w-32 bg-gradient-to-r ${theme.gradient} opacity-40 pointer-events-none`}></div>
+
+                              {/* Order Number */}
+                              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-100 text-slate-600 border border-slate-200 flex items-center justify-center font-bold text-sm relative z-10 shadow-sm">
+                                {index + 1}
+                              </div>
+                              
+                              {/* Mini Icon */}
+                              <div className={`hidden sm:flex flex-shrink-0 w-10 h-10 rounded-lg items-center justify-center ${theme.badgeBg} ${theme.accent} relative z-10 border border-white shadow-sm`}>
+                                <i className={`fa-solid ${deptIcon}`}></i>
+                              </div>
+
+                              {/* Post Details */}
+                              <div className="flex-grow relative z-10">
+                                <h4 className="font-bold text-slate-800 leading-tight mb-1">{post.name}</h4>
+                                <p className="text-xs text-slate-500 font-medium">{post.department} &bull; Level {post.payLevel} &bull; <span className={theme.badgeText}>{post.jobType}</span></p>
+                              </div>
+                              
+                              {/* Action Buttons */}
+                              <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity relative z-10">
+                                <div className="flex flex-col gap-1 mr-2">
+                                  <button 
+                                    onClick={() => movePreference(index, 'up')}
+                                    disabled={index === 0}
+                                    className="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                                  >
+                                    <i className="fa-solid fa-chevron-up"></i>
+                                  </button>
+                                  <button 
+                                    onClick={() => movePreference(index, 'down')}
+                                    disabled={index === preferences.length - 1}
+                                    className="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                                  >
+                                    <i className="fa-solid fa-chevron-down"></i>
+                                  </button>
+                                </div>
+                                <button 
+                                  onClick={() => removeFromPreferences(post.id)}
+                                  className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                  title="Remove from list"
+                                >
+                                  <i className="fa-solid fa-trash-can text-lg"></i>
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {preferences.length > 0 && (
+                  <div className="mt-8 bg-blue-50 rounded-xl p-6 border border-blue-100 flex items-start gap-4">
+                    <i className="fa-solid fa-circle-info text-blue-600 text-lg mt-0.5"></i>
+                    <div className="text-sm text-blue-800">
+                      <p className="font-bold mb-1">Pro Tip for Preference Filling</p>
+                      <p>Always fill higher grade pay (Level 7) posts first unless you have a strict geographical constraint (e.g., you only want Delhi and are willing to take a Level 4/5 post to get it). Also, consider the promotion aspects and nature of the job (Desk vs Field).</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+          </main>
+
+          {/* FOOTER */}
+          <footer className="bg-slate-900 text-slate-400 py-8 text-center text-sm border-t border-slate-800 mt-auto">
+            <p className="flex items-center justify-center gap-1">
+              Designed and Developed with ❤️ by <span className="text-white font-bold tracking-wide">Abhishek jorwal</span>
+            </p>
+            <p className="mt-2 text-xs opacity-60">Data sourced from ST category vacancy tables. Ensure to cross-check with official SSC notifications.</p>
+          </footer>
+
+          {/* MODAL FOR STATE-WISE BREAKDOWN */}
+          {selectedPost && (
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+                
+                {/* Modal Header */}
+                <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                      <i className={`fa-solid ${getDeptIcon(postsData.find(p => p.id === selectedPost)?.department || '')} text-slate-400`}></i>
+                      {postsData.find(p => p.id === selectedPost)?.name} Vacancies
+                    </h3>
+                    <p className="text-sm text-slate-500">ST Category State/Cadre Breakdown</p>
+                  </div>
+                  <button 
+                    onClick={() => setSelectedPost(null)}
+                    className="p-2 text-slate-400 hover:bg-slate-200 hover:text-slate-700 rounded-full transition-colors"
+                  >
+                    <i className="fa-solid fa-times"></i>
+                  </button>
+                </div>
+
+                {/* Modal Controls */}
+                <div className="px-6 py-3 border-b border-slate-100 bg-white flex justify-between items-center">
+                  <span className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                    <i className="fa-solid fa-sort text-blue-500"></i> Sort By:
+                  </span>
+                  <select 
+                    value={cadreSortType}
+                    onChange={(e) => setCadreSortType(e.target.value)}
+                    className="text-sm border-slate-300 rounded-md py-1.5 pl-3 pr-8 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 border outline-none font-medium"
+                  >
+                    <option value="vacancies">High to Low Vacancies</option>
+                    <option value="northToSouth">North to South (Geography)</option>
+                    <option value="alphabetical">Alphabetical A-Z</option>
+                  </select>
+                </div>
+
+                {/* Modal Content - Table */}
+                <div className="p-6 overflow-y-auto bg-slate-50/50 flex-grow">
+                  <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <table className="w-full text-left text-sm text-slate-600">
+                      <thead className="bg-slate-100 text-slate-800 text-xs uppercase font-semibold">
+                        <tr>
+                          <th className="px-6 py-3 border-b border-slate-200">Zone / Cadre</th>
+                          <th className="px-6 py-3 border-b border-slate-200 text-right">ST Vacancies</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {getSortedCadres(selectedPost).length > 0 ? (
+                          getSortedCadres(selectedPost).map((cadre, idx) => (
+                            <tr key={idx} className="hover:bg-blue-50/50 transition-colors border-b border-slate-100 last:border-0">
+                              <td className="px-6 py-3 font-medium text-slate-800">
+                                {cadre.name}
+                                {cadreSortType === 'northToSouth' && (
+                                  <span className="ml-2 text-[10px] text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full border border-blue-200 font-bold">
+                                    <i className="fa-solid fa-location-dot mr-1 opacity-70"></i>
+                                    Rank: {northToSouthOrder[cadre.name] || '-'}
+                                  </span>
+                                )}
+                              </td>
+                              <td className="px-6 py-3 text-right font-bold text-slate-800 text-base">
+                                {cadre.count}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="2" className="px-6 py-8 text-center text-slate-500">
+                              No vacancies recorded for specific cadres in the provided data.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                {/* Modal Footer */}
+                <div className="px-6 py-4 border-t border-slate-100 bg-white flex justify-end">
+                  <button 
+                    onClick={() => setSelectedPost(null)}
+                    className="bg-slate-800 text-white px-5 py-2 rounded-lg font-medium hover:bg-slate-900 transition-colors shadow-sm"
+                  >
+                    Close
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
