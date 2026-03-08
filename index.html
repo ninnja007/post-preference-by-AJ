@@ -13,7 +13,7 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Tailwind Config for Custom Font & Animations -->
+  <!-- Tailwind Config for Custom Font & Performance -->
   <script>
     tailwind.config = {
       theme: {
@@ -22,19 +22,8 @@
             sans: ['Inter', 'sans-serif'],
           },
           boxShadow: {
-            'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
-            'float': '0 10px 40px -10px rgba(0,0,0,0.15)',
-          },
-          animation: {
-            'blob': 'blob 7s infinite',
-          },
-          keyframes: {
-            blob: {
-              '0%': { transform: 'translate(0px, 0px) scale(1)' },
-              '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-              '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-              '100%': { transform: 'translate(0px, 0px) scale(1)' },
-            }
+            'glass': '0 4px 20px 0 rgba(31, 38, 135, 0.05)',
+            'float': '0 10px 40px -10px rgba(0,0,0,0.1)',
           }
         }
       }
@@ -75,9 +64,20 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #94a3b8; 
     }
+    
+    /* High Performance Static Mesh Background */
+    body {
+      background-color: #f8fafc;
+      background-image: 
+        radial-gradient(at 0% 0%, hsla(217,100%,94%,1) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(285,100%,93%,1) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, hsla(158,100%,92%,1) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, hsla(38,100%,90%,1) 0px, transparent 50%);
+      background-attachment: fixed;
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased relative min-h-screen">
+<body class="text-slate-800 font-sans antialiased relative min-h-screen">
   
   <div id="root"></div>
 
@@ -163,71 +163,61 @@
       return 'fa-building-columns';
     };
 
-    // Upgraded to real Glassmorphism + Colors
+    // High-Performance "Glass" (Removed expensive backdrop-blurs, using transparent color matching instead)
     const getJobTypeTheme = (jobType) => {
       switch (jobType) {
         case 'Desk':
           return {
-            bg: 'bg-gradient-to-br from-blue-200/50 to-blue-50/50 backdrop-blur-xl',
-            border: 'border-blue-300/40',
+            bg: 'bg-gradient-to-br from-blue-50/90 to-white/95',
+            border: 'border-blue-200/60',
             accent: 'text-blue-600',
-            badgeBg: 'bg-blue-100/70',
+            badgeBg: 'bg-blue-100',
             badgeText: 'text-blue-800',
             gradient: 'from-blue-100/50 to-transparent',
             indicator: 'bg-blue-500'
           };
         case 'Field/Uniform':
           return {
-            bg: 'bg-gradient-to-br from-emerald-200/50 to-emerald-50/50 backdrop-blur-xl',
-            border: 'border-emerald-300/40',
+            bg: 'bg-gradient-to-br from-emerald-50/90 to-white/95',
+            border: 'border-emerald-200/60',
             accent: 'text-emerald-600',
-            badgeBg: 'bg-emerald-100/70',
+            badgeBg: 'bg-emerald-100',
             badgeText: 'text-emerald-800',
             gradient: 'from-emerald-100/50 to-transparent',
             indicator: 'bg-emerald-500'
           };
         case 'Field/Desk Mix':
           return {
-            bg: 'bg-gradient-to-br from-purple-200/50 to-purple-50/50 backdrop-blur-xl',
-            border: 'border-purple-300/40',
+            bg: 'bg-gradient-to-br from-purple-50/90 to-white/95',
+            border: 'border-purple-200/60',
             accent: 'text-purple-600',
-            badgeBg: 'bg-purple-100/70',
+            badgeBg: 'bg-purple-100',
             badgeText: 'text-purple-800',
             gradient: 'from-purple-100/50 to-transparent',
             indicator: 'bg-purple-500'
           };
         case 'Field':
           return {
-            bg: 'bg-gradient-to-br from-orange-200/50 to-orange-50/50 backdrop-blur-xl',
-            border: 'border-orange-300/40',
+            bg: 'bg-gradient-to-br from-orange-50/90 to-white/95',
+            border: 'border-orange-200/60',
             accent: 'text-orange-600',
-            badgeBg: 'bg-orange-100/70',
+            badgeBg: 'bg-orange-100',
             badgeText: 'text-orange-800',
             gradient: 'from-orange-100/50 to-transparent',
             indicator: 'bg-orange-500'
           };
         default:
           return {
-            bg: 'bg-gradient-to-br from-slate-200/50 to-slate-50/50 backdrop-blur-xl',
-            border: 'border-slate-300/40',
+            bg: 'bg-gradient-to-br from-slate-50/90 to-white/95',
+            border: 'border-slate-200/60',
             accent: 'text-slate-600',
-            badgeBg: 'bg-slate-100/70',
+            badgeBg: 'bg-slate-100',
             badgeText: 'text-slate-800',
             gradient: 'from-slate-100/50 to-transparent',
             indicator: 'bg-slate-400'
           };
       }
     };
-
-    // Animated Abstract Background Component for Glassmorphism Context
-    const AnimatedBackground = () => (
-      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none opacity-60">
-        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-[100px] animate-blob"></div>
-        <div className="absolute top-[20%] right-[-5%] w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-[100px] animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-[-10%] left-[20%] w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-[100px] animate-blob animation-delay-4000"></div>
-        <div className="absolute bottom-[10%] right-[20%] w-80 h-80 bg-orange-200 rounded-full mix-blend-multiply filter blur-[100px] animate-blob animation-delay-2000"></div>
-      </div>
-    );
 
     function App() {
       const [activeTab, setActiveTab] = useState('browse');
@@ -337,10 +327,9 @@
 
       return (
         <div className="min-h-screen flex flex-col relative z-0">
-          <AnimatedBackground />
 
-          {/* HEADER */}
-          <header className="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-xl border-b border-white/10 shadow-lg">
+          {/* HEADER (Kept blur here as it's just one element and fine for perf) */}
+          <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-700 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-400 to-indigo-500 flex items-center justify-center text-white shadow-md border border-white/20">
@@ -358,16 +347,16 @@
               </div>
               
               {/* Tabs */}
-              <div className="flex bg-slate-800/80 backdrop-blur-md p-1 rounded-xl shadow-inner border border-white/5">
+              <div className="flex bg-slate-800/80 p-1 rounded-xl shadow-inner border border-white/5">
                 <button 
                   onClick={() => setActiveTab('browse')}
-                  className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === 'browse' ? 'bg-white/90 text-slate-900 shadow-sm backdrop-blur-sm' : 'text-slate-300 hover:text-white hover:bg-slate-700/50'}`}
+                  className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === 'browse' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-700/50'}`}
                 >
                   <i className="fa-solid fa-layer-group mr-2"></i> Browse
                 </button>
                 <button 
                   onClick={() => setActiveTab('preferences')}
-                  className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${activeTab === 'preferences' ? 'bg-white/90 text-slate-900 shadow-sm backdrop-blur-sm' : 'text-slate-300 hover:text-white hover:bg-slate-700/50'}`}
+                  className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${activeTab === 'preferences' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-700/50'}`}
                 >
                   <i className="fa-solid fa-list-check"></i>
                   My List 
@@ -388,9 +377,9 @@
                 
                 {/* LEFT SIDEBAR: FILTERS */}
                 <div className="lg:w-72 flex-shrink-0">
-                  <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-glass border border-white p-6 sticky top-28">
+                  <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-glass border border-white p-6 sticky top-28">
                     <div className="flex items-center gap-3 mb-6">
-                      <div className="w-8 h-8 rounded-lg bg-blue-100/80 text-blue-700 flex items-center justify-center border border-blue-200/50">
+                      <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center border border-blue-200/50">
                         <i className="fa-solid fa-sliders text-sm"></i>
                       </div>
                       <h2 className="text-lg font-bold text-slate-800">Filters</h2>
@@ -403,7 +392,7 @@
                           <select 
                             value={ageFilter} 
                             onChange={(e) => setAgeFilter(e.target.value)}
-                            className="w-full rounded-xl border border-white/60 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white/50 backdrop-blur-md outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
+                            className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
                           >
                             <option value="All">All Ages</option>
                             <option value="18-27">18-27 yrs</option>
@@ -417,7 +406,7 @@
                           <select 
                             value={colorBlindFilter} 
                             onChange={(e) => setColorBlindFilter(e.target.value)}
-                            className="w-full rounded-xl border border-white/60 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white/50 backdrop-blur-md outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
+                            className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
                           >
                             <option value="All">All Posts</option>
                             <option value="Suitable Only">Suitable</option>
@@ -430,7 +419,7 @@
                         <select 
                           value={jobTypeFilter} 
                           onChange={(e) => setJobTypeFilter(e.target.value)}
-                          className="w-full rounded-xl border border-white/60 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white/50 backdrop-blur-md outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
+                          className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
                         >
                           <option value="All">All Types</option>
                           <option value="Desk">Desk Job Only</option>
@@ -445,7 +434,7 @@
                         <select 
                           value={payLevelFilter} 
                           onChange={(e) => setPayLevelFilter(e.target.value)}
-                          className="w-full rounded-xl border border-white/60 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white/50 backdrop-blur-md outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
+                          className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
                         >
                           <option value="All">All Levels</option>
                           <option value="7">Level 7 (4600 GP)</option>
@@ -456,11 +445,11 @@
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Skill Test Requirement</label>
+                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Skill Test</label>
                         <select 
                           value={cptFilter} 
                           onChange={(e) => setCptFilter(e.target.value)}
-                          className="w-full rounded-xl border border-white/60 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white/50 backdrop-blur-md outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
+                          className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
                         >
                           <option value="All">All Options</option>
                           <option value="CPT">CPT Required</option>
@@ -474,14 +463,14 @@
                         <select 
                           value={locationFilter} 
                           onChange={(e) => setLocationFilter(e.target.value)}
-                          className="w-full rounded-xl border border-white/60 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white/50 backdrop-blur-md outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
+                          className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
                         >
                           <option value="All">Anywhere (All India)</option>
                           <option value="Delhi Only">Delhi Region Only</option>
                         </select>
                       </div>
 
-                      <div className="flex items-center mt-4 bg-white/50 backdrop-blur-md p-3 rounded-xl border border-white shadow-sm">
+                      <div className="flex items-center mt-4 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
                         <input 
                           type="checkbox" 
                           id="hideZero" 
@@ -496,7 +485,7 @@
                     </div>
 
                     <div className="mt-8 pt-6 border-t border-slate-200/50">
-                      <div className="bg-gradient-to-br from-blue-100/50 to-indigo-100/50 backdrop-blur-md rounded-xl p-4 border border-blue-200/50 shadow-inner">
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 shadow-inner">
                         <p className="text-xs font-bold text-blue-800/70 uppercase tracking-wide mb-1">ST Vacancies Found</p>
                         <p className="text-3xl font-extrabold text-blue-700 drop-shadow-sm">{filteredPosts.reduce((acc, curr) => acc + curr.vacancies, 0)}</p>
                       </div>
@@ -527,10 +516,13 @@
                       const deptIcon = getDeptIcon(post.department);
                       
                       return (
-                        <div key={post.id} className={`${theme.bg} rounded-2xl shadow-glass border ${isAdded ? 'ring-2 ring-blue-500 shadow-float border-blue-400/50' : theme.border} p-6 hover:-translate-y-1 hover:shadow-float transition-all duration-300 flex flex-col justify-between relative overflow-hidden group`}>
+                        <div key={post.id} className={`${theme.bg} rounded-2xl shadow-glass border ${isAdded ? 'ring-2 ring-blue-500 shadow-float border-blue-400' : theme.border} p-6 hover:-translate-y-1 hover:shadow-float transition-transform duration-200 flex flex-col justify-between relative overflow-hidden group`}>
                           
+                          {/* Left Color Bar Indicator */}
+                          <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${theme.indicator} opacity-80`}></div>
+
                           {/* Decorative Background Icon */}
-                          <i className={`fa-solid ${deptIcon} absolute -bottom-4 -right-4 text-8xl opacity-[0.04] group-hover:opacity-[0.08] group-hover:scale-110 transition-all duration-500 pointer-events-none ${theme.accent}`}></i>
+                          <i className={`fa-solid ${deptIcon} absolute -bottom-4 -right-4 text-8xl opacity-[0.04] pointer-events-none ${theme.accent}`}></i>
                           
                           {/* Top Section */}
                           <div className="relative z-10 pl-3">
@@ -538,7 +530,7 @@
                               
                               <div className="flex-grow pr-2">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <span className="bg-slate-800/90 backdrop-blur-sm text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm tracking-widest">{post.postCode}</span>
+                                  <span className="bg-slate-800 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm tracking-widest">{post.postCode}</span>
                                   <h3 className="text-lg font-bold text-slate-800 leading-tight">{post.name}</h3>
                                 </div>
                                 <p className="text-sm font-medium text-slate-600 flex items-center gap-1.5 line-clamp-1" title={post.department}>
@@ -547,7 +539,7 @@
                               </div>
                               
                               <div className="flex-shrink-0 flex flex-col items-end">
-                                <span className="inline-flex items-center bg-white/80 backdrop-blur-md text-slate-800 text-sm font-extrabold px-3 py-1 rounded-xl border border-white/60 shadow-sm">
+                                <span className="inline-flex items-center bg-white text-slate-800 text-sm font-extrabold px-3 py-1 rounded-xl border border-slate-200 shadow-sm">
                                   {post.vacancies} <span className="text-[10px] ml-1 uppercase opacity-70 font-semibold">Posts</span>
                                 </span>
                               </div>
@@ -555,20 +547,20 @@
 
                             {/* Alert/Warning Badges: Age, Physical, CB */}
                             <div className="flex flex-wrap gap-1.5 mt-2 mb-4">
-                              <span className="inline-flex items-center gap-1 bg-white/60 text-slate-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-white shadow-sm uppercase tracking-wide">
+                              <span className="inline-flex items-center gap-1 bg-white text-slate-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-slate-200 shadow-sm uppercase tracking-wide">
                                 <i className="fa-regular fa-clock"></i> {post.ageLimit} yrs
                               </span>
                               {post.colorBlindSuitable === 'NO' ? (
-                                <span className="inline-flex items-center gap-1 bg-rose-100/80 text-rose-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-rose-200/50 shadow-sm uppercase tracking-wide backdrop-blur-sm">
+                                <span className="inline-flex items-center gap-1 bg-rose-50 text-rose-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-rose-200 shadow-sm uppercase tracking-wide">
                                   <i className="fa-solid fa-eye-slash"></i> Not for CB
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center gap-1 bg-emerald-100/60 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-emerald-200/50 shadow-sm uppercase tracking-wide backdrop-blur-sm">
+                                <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-emerald-200 shadow-sm uppercase tracking-wide">
                                   <i className="fa-solid fa-eye"></i> CB Suitable
                                 </span>
                               )}
                               {post.hasPhysical && (
-                                <span className="inline-flex items-center gap-1 bg-amber-100/80 text-amber-800 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-200/50 shadow-sm uppercase tracking-wide backdrop-blur-sm">
+                                <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-800 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-200 shadow-sm uppercase tracking-wide">
                                   <i className="fa-solid fa-dumbbell"></i> Physical Std
                                 </span>
                               )}
@@ -576,27 +568,27 @@
                             
                             {/* Standard Tags */}
                             <div className="flex flex-wrap gap-2 mt-4">
-                              <span className="inline-flex items-center gap-1.5 bg-white/50 text-slate-700 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-white shadow-sm backdrop-blur-sm">
+                              <span className="inline-flex items-center gap-1.5 bg-white/60 text-slate-700 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-sm">
                                 <i className="fa-solid fa-indian-rupee-sign opacity-50"></i> Lvl {post.payLevel}
                               </span>
-                              <span className={`inline-flex items-center gap-1.5 ${theme.badgeBg} ${theme.badgeText} text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-white/50 shadow-sm backdrop-blur-sm`}>
+                              <span className={`inline-flex items-center gap-1.5 ${theme.badgeBg} ${theme.badgeText} text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-sm`}>
                                 <i className="fa-solid fa-briefcase opacity-50"></i> {post.jobType}
                               </span>
-                              <span className="inline-flex items-center gap-1.5 bg-white/50 text-slate-700 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-white shadow-sm backdrop-blur-sm">
+                              <span className="inline-flex items-center gap-1.5 bg-white/60 text-slate-700 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-sm">
                                 <i className="fa-solid fa-keyboard opacity-50"></i> {post.cpt}
                               </span>
-                              <span className="inline-flex items-center gap-1.5 bg-white/50 text-slate-700 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-white shadow-sm backdrop-blur-sm">
+                              <span className="inline-flex items-center gap-1.5 bg-white/60 text-slate-700 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-sm">
                                 <i className="fa-solid fa-location-dot opacity-50"></i> {post.posting}
                               </span>
                             </div>
                           </div>
                           
                           {/* Actions */}
-                          <div className="flex gap-3 mt-5 pt-5 border-t border-slate-200/40 relative z-10 pl-3">
+                          <div className="flex gap-3 mt-5 pt-5 border-t border-slate-200/60 relative z-10 pl-3">
                             {post.hasCadreBreakdown && post.vacancies > 0 ? (
                               <button 
                                 onClick={() => setSelectedPost(post.id)}
-                                className="flex-1 bg-white/80 hover:bg-white text-slate-700 font-semibold py-2.5 rounded-xl text-sm transition-all border border-white shadow-sm hover:shadow flex items-center justify-center gap-2 backdrop-blur-md"
+                                className="flex-1 bg-white hover:bg-slate-50 text-slate-700 font-semibold py-2.5 rounded-xl text-sm transition-all border border-slate-200 shadow-sm hover:shadow flex items-center justify-center gap-2"
                               >
                                 <i className="fa-solid fa-map-location-dot text-slate-400"></i> Zone Breakup
                               </button>
@@ -606,10 +598,10 @@
                             
                             <button 
                               onClick={() => isAdded ? removeFromPreferences(post.id) : addToPreferences(post)}
-                              className={`flex-1 font-semibold py-2.5 rounded-xl text-sm transition-all flex items-center justify-center gap-2 shadow-sm transform active:scale-95 backdrop-blur-md border ${
+                              className={`flex-1 font-semibold py-2.5 rounded-xl text-sm transition-all flex items-center justify-center gap-2 shadow-sm transform active:scale-95 border ${
                                 isAdded 
-                                  ? 'bg-rose-50/80 text-rose-600 hover:bg-rose-100 border-rose-200/50 hover:border-rose-300' 
-                                  : 'bg-gradient-to-r from-blue-600/90 to-indigo-600/90 text-white hover:from-blue-700 hover:to-indigo-700 hover:shadow-md border-transparent'
+                                  ? 'bg-rose-50 text-rose-600 hover:bg-rose-100 border-rose-200 hover:border-rose-300' 
+                                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 hover:shadow-md border-transparent'
                               }`}
                             >
                               {isAdded ? (
@@ -624,8 +616,8 @@
                     })}
                     
                     {filteredPosts.length === 0 && (
-                      <div className="col-span-full py-16 text-center text-slate-500 bg-white/60 backdrop-blur-xl rounded-2xl shadow-glass border border-white flex flex-col items-center justify-center">
-                        <div className="w-20 h-20 bg-white/80 rounded-full flex items-center justify-center mb-4 shadow-sm border border-slate-100">
+                      <div className="col-span-full py-16 text-center text-slate-500 bg-white rounded-2xl shadow-glass border border-slate-200 flex flex-col items-center justify-center">
+                        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4 shadow-sm border border-slate-100">
                           <i className="fa-solid fa-magnifying-glass text-3xl text-slate-300"></i>
                         </div>
                         <h3 className="text-lg font-bold text-slate-800 mb-1">No matches found</h3>
@@ -641,16 +633,16 @@
             {/* PREFERENCE LIST TAB */}
             {activeTab === 'preferences' && (
               <div className="max-w-4xl mx-auto">
-                <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-glass border border-white overflow-hidden">
-                  <div className="bg-white/40 border-b border-white/60 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="bg-white/80 rounded-2xl shadow-glass border border-white overflow-hidden">
+                  <div className="bg-white/60 border-b border-slate-200 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                       <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Your Preference List</h2>
-                      <p className="text-sm text-slate-600 mt-1 font-medium">Order your selected posts carefully. Top post is highest preference. <span className="inline-block bg-emerald-100/80 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold ml-1 uppercase tracking-wider border border-emerald-200/50 backdrop-blur-sm"><i className="fa-solid fa-cloud-arrow-up mr-1"></i>Auto-saved</span></p>
+                      <p className="text-sm text-slate-600 mt-1 font-medium">Order your selected posts carefully. Top post is highest preference. <span className="inline-block bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold ml-1 uppercase tracking-wider border border-emerald-200"><i className="fa-solid fa-cloud-arrow-up mr-1"></i>Auto-saved</span></p>
                     </div>
                     <div className="flex gap-3">
                       <button 
                         onClick={copyToClipboard}
-                        className="flex items-center gap-2 bg-gradient-to-r from-slate-800/90 to-slate-900/90 backdrop-blur-md text-white hover:from-slate-700 hover:to-slate-800 px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md transition-all transform hover:-translate-y-0.5 active:scale-95 border border-white/10"
+                        className="flex items-center gap-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white hover:from-slate-700 hover:to-slate-800 px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md transition-all transform hover:-translate-y-0.5 active:scale-95 border border-slate-700"
                       >
                         <i className="fa-regular fa-copy"></i> Copy Final List
                       </button>
@@ -660,21 +652,21 @@
                   <div className="p-6">
                     {preferences.length === 0 ? (
                       <div className="text-center py-16 flex flex-col items-center">
-                        <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-blue-50/50 backdrop-blur-sm border-8 border-white/80 shadow-soft mb-6">
+                        <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-blue-50 border-8 border-white shadow-soft mb-6">
                           <i className="fa-solid fa-list-check text-4xl text-blue-500"></i>
                         </div>
                         <h3 className="text-xl font-bold text-slate-800 mb-2">Your list is empty</h3>
                         <p className="text-slate-600 font-medium max-w-sm mx-auto mb-8">Go back to the Browse tab and add posts you are interested in applying for.</p>
                         <button 
                           onClick={() => setActiveTab('browse')}
-                          className="bg-blue-600/90 backdrop-blur-sm border border-blue-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:scale-95"
+                          className="bg-blue-600 border border-blue-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:scale-95"
                         >
                           <i className="fa-solid fa-layer-group mr-2"></i> Browse Posts
                         </button>
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 px-2 flex items-center gap-2 bg-white/50 backdrop-blur-sm py-2 rounded-lg border border-white justify-center shadow-sm">
+                        <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 px-2 flex items-center gap-2 bg-white py-2 rounded-lg border border-slate-200 justify-center shadow-sm">
                           <i className="fa-solid fa-hand-pointer text-blue-500"></i> Drag and drop rows to set your exact priority order
                         </div>
                         
@@ -690,17 +682,17 @@
                               onDragEnter={(e) => (dragOverItem.current = index)}
                               onDragEnd={handleSort}
                               onDragOver={(e) => e.preventDefault()}
-                              className={`flex items-center gap-4 p-4 ${theme.bg} border ${theme.border} rounded-2xl hover:shadow-md transition-all group relative overflow-hidden cursor-grab active:cursor-grabbing`}
+                              className={`flex items-center gap-4 p-4 ${theme.bg} border ${theme.border} rounded-2xl hover:shadow-md transition-all group relative overflow-hidden cursor-grab active:cursor-grabbing border-l-[6px] ${theme.border.replace('border-', 'border-l-')} ${theme.indicator.replace('bg-', 'border-l-')}`}
                             >
                               
                               <div className="flex-shrink-0 flex items-center gap-3 relative z-10 w-16">
                                 <i className="fa-solid fa-grip-vertical text-slate-400 group-hover:text-slate-600 cursor-grab px-1"></i>
-                                <div className="w-8 h-8 rounded-full bg-white text-slate-700 font-bold text-sm shadow-sm flex items-center justify-center border border-white/60">
+                                <div className="w-8 h-8 rounded-full bg-white text-slate-700 font-bold text-sm shadow-sm flex items-center justify-center border border-slate-200">
                                   {index + 1}
                                 </div>
                               </div>
                               
-                              <div className={`hidden sm:flex flex-shrink-0 w-12 h-12 rounded-xl items-center justify-center ${theme.badgeBg} ${theme.accent} relative z-10 border border-white/60 shadow-sm backdrop-blur-sm`}>
+                              <div className={`hidden sm:flex flex-shrink-0 w-12 h-12 rounded-xl items-center justify-center ${theme.badgeBg} ${theme.accent} relative z-10 border border-white shadow-sm`}>
                                 <i className={`fa-solid ${deptIcon} text-lg`}></i>
                               </div>
 
@@ -719,16 +711,16 @@
                                   {(post.colorBlindSuitable === 'NO' || post.hasPhysical) && <span className="w-1 h-1 rounded-full bg-slate-300 ml-1"></span>}
                                   
                                   {post.colorBlindSuitable === 'NO' && 
-                                    <span className="text-rose-700 font-bold bg-rose-100/80 px-1.5 py-0.5 rounded border border-rose-200/50 ml-1 shadow-sm backdrop-blur-sm">Not for CB</span>
+                                    <span className="text-rose-700 font-bold bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200 ml-1 shadow-sm">Not for CB</span>
                                   }
                                   {post.hasPhysical && 
-                                    <span className="text-amber-800 font-bold bg-amber-100/80 px-1.5 py-0.5 rounded border border-amber-200/50 ml-1 shadow-sm backdrop-blur-sm">Physical Std</span>
+                                    <span className="text-amber-800 font-bold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 ml-1 shadow-sm">Physical Std</span>
                                   }
                                 </div>
                               </div>
                               
                               <div className="flex items-center gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity relative z-10">
-                                <div className="flex flex-col gap-1 mr-2 bg-white/60 backdrop-blur-md rounded-lg border border-white p-1 shadow-sm">
+                                <div className="flex flex-col gap-1 mr-2 bg-white rounded-lg border border-slate-200 p-1 shadow-sm">
                                   <button 
                                     onClick={() => movePreference(index, 'up')}
                                     disabled={index === 0}
@@ -746,7 +738,7 @@
                                 </div>
                                 <button 
                                   onClick={() => removeFromPreferences(post.id)}
-                                  className="w-10 h-10 flex items-center justify-center bg-white/60 backdrop-blur-md text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors border border-white hover:border-rose-100 shadow-sm"
+                                  className="w-10 h-10 flex items-center justify-center bg-white text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors border border-slate-200 hover:border-rose-200 shadow-sm"
                                   title="Remove from list"
                                 >
                                   <i className="fa-solid fa-trash-can"></i>
@@ -761,14 +753,14 @@
                 </div>
                 
                 {preferences.length > 0 && (
-                  <div className="mt-8 bg-gradient-to-r from-blue-100/60 to-indigo-100/60 backdrop-blur-xl rounded-2xl p-6 border border-blue-200/50 shadow-sm flex items-start gap-4 relative overflow-hidden">
+                  <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200 shadow-sm flex items-start gap-4 relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-2 h-full bg-blue-500"></div>
-                    <div className="w-10 h-10 rounded-full bg-white/80 shadow-sm flex items-center justify-center flex-shrink-0 text-blue-600 border border-white">
+                    <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center flex-shrink-0 text-blue-600 border border-blue-100">
                       <i className="fa-solid fa-lightbulb text-xl"></i>
                     </div>
                     <div className="text-sm text-blue-900 leading-relaxed font-medium">
-                      <p className="font-bold text-base mb-1 drop-shadow-sm">Pro Tip for Preference Filling</p>
-                      <p>Always fill higher grade pay (Level 7) posts first unless you have a strict geographical constraint (e.g., you only want your home state and are willing to take a Level 4/5 post to get it). Pay close attention to the <strong className="text-rose-700 bg-white/80 px-1 py-0.5 rounded shadow-sm border border-rose-100">Not for CB</strong> tag if you are color blind, as those allocations will be cancelled if you fail the medical.</p>
+                      <p className="font-bold text-base mb-1">Pro Tip for Preference Filling</p>
+                      <p>Always fill higher grade pay (Level 7) posts first unless you have a strict geographical constraint (e.g., you only want your home state and are willing to take a Level 4/5 post to get it). Pay close attention to the <strong className="text-rose-700 bg-white px-1 py-0.5 rounded shadow-sm border border-rose-100">Not for CB</strong> tag if you are color blind, as those allocations will be cancelled if you fail the medical.</p>
                     </div>
                   </div>
                 )}
@@ -778,111 +770,13 @@
           </main>
 
           {/* FOOTER */}
-          <footer className="relative z-10 bg-white/40 backdrop-blur-md text-slate-600 py-10 text-center text-sm border-t border-white/60 mt-auto shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.02)]">
+          <footer className="relative z-10 bg-white/60 text-slate-600 py-10 text-center text-sm border-t border-slate-200 mt-auto shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.02)]">
             <p className="flex items-center justify-center gap-2 font-semibold">
               Designed & Developed with <i className="fa-solid fa-heart text-rose-500"></i> by <span className="text-slate-900 font-bold tracking-wide">Abhishek Jorwal</span>
             </p>
             <p className="mt-3 text-xs opacity-80 max-w-lg mx-auto leading-relaxed font-medium">This tool is designed to assist ST category candidates in organizing their preferences. Data is sourced from official SSC vacancy PDFs. Always cross-check final choices with official SSC documentation.</p>
           </footer>
 
-          {/* MODAL FOR STATE-WISE BREAKDOWN */}
-          {selectedPost && (
-            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-opacity">
-              <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200 border border-white">
-                
-                {/* Modal Header */}
-                <div className="px-6 py-5 border-b border-slate-200/50 flex justify-between items-center bg-white/50">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-sm border ${getJobTypeTheme(postsData.find(p => p.id === selectedPost)?.jobType).badgeBg} ${getJobTypeTheme(postsData.find(p => p.id === selectedPost)?.jobType).accent}`}>
-                      <i className={`fa-solid ${getDeptIcon(postsData.find(p => p.id === selectedPost)?.department || '')} text-xl`}></i>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-slate-800 leading-tight">
-                        {postsData.find(p => p.id === selectedPost)?.name}
-                      </h3>
-                      <p className="text-sm font-semibold text-slate-500 mt-0.5">ST Category State/Zone Breakup</p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => setSelectedPost(null)}
-                    className="w-10 h-10 flex items-center justify-center text-slate-400 bg-white hover:bg-slate-100 hover:text-slate-700 rounded-full transition-colors shadow-sm border border-slate-100"
-                  >
-                    <i className="fa-solid fa-times text-lg"></i>
-                  </button>
-                </div>
-
-                {/* Modal Controls */}
-                <div className="px-6 py-3 border-b border-slate-200/50 bg-slate-50/60 flex justify-between items-center">
-                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                    <i className="fa-solid fa-sort"></i> Sort Data By
-                  </span>
-                  <select 
-                    value={cadreSortType}
-                    onChange={(e) => setCadreSortType(e.target.value)}
-                    className="text-sm border border-slate-200 rounded-xl py-1.5 pl-3 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm font-medium text-slate-700 outline-none cursor-pointer"
-                  >
-                    <option value="vacancies">High to Low Vacancies</option>
-                    <option value="northToSouth">North to South (Geography)</option>
-                    <option value="alphabetical">Alphabetical (A-Z)</option>
-                  </select>
-                </div>
-
-                {/* Modal Content - Table */}
-                <div className="p-0 overflow-y-auto bg-white/40 flex-grow">
-                  <table className="w-full text-left text-sm text-slate-600 border-collapse">
-                    <thead className="bg-slate-100/80 backdrop-blur-md text-slate-500 text-[11px] uppercase tracking-wider font-bold sticky top-0 z-10 shadow-sm">
-                      <tr>
-                        <th className="px-6 py-4 border-b border-slate-200/60">Zone / Cadre Location</th>
-                        <th className="px-6 py-4 border-b border-slate-200/60 text-right">ST Vacancies</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100/60">
-                      {getSortedCadres(selectedPost).length > 0 ? (
-                        getSortedCadres(selectedPost).map((cadre, idx) => (
-                          <tr key={idx} className="hover:bg-white/80 transition-colors group">
-                            <td className="px-6 py-3.5 font-semibold text-slate-700">
-                              <span className="flex items-center gap-2">
-                                <i className="fa-solid fa-map-pin text-slate-300 group-hover:text-blue-400 transition-colors text-xs"></i>
-                                {cadre.name}
-                              </span>
-                              {cadreSortType === 'northToSouth' && (
-                                <span className="ml-5 mt-1 block text-[10px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100 font-bold max-w-max shadow-sm">
-                                  Geographical Rank: {northToSouthOrder[cadre.name] || '-'}
-                                </span>
-                              )}
-                            </td>
-                            <td className="px-6 py-3.5 text-right font-black text-slate-800 text-base">
-                              {cadre.count}
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="2" className="px-6 py-12 text-center">
-                            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
-                              <i className="fa-regular fa-folder-open text-2xl text-slate-400"></i>
-                            </div>
-                            <p className="text-slate-500 font-medium">No zone-wise breakdown available for this post.</p>
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-                
-                {/* Modal Footer */}
-                <div className="px-6 py-4 border-t border-slate-200/50 bg-white/60 backdrop-blur-md flex justify-end">
-                  <button 
-                    onClick={() => setSelectedPost(null)}
-                    className="bg-slate-800 text-white border border-slate-700 px-6 py-2.5 rounded-xl font-semibold hover:bg-slate-900 shadow-md transition-all active:scale-95"
-                  >
-                    Close Window
-                  </button>
-                </div>
-
-              </div>
-            </div>
-          )}
         </div>
       );
     }
