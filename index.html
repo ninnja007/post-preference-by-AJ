@@ -515,6 +515,12 @@
       const [showCompareModal, setShowCompareModal] = useState(false);
       const [showClearConfirm, setShowClearConfirm] = useState(false);
 
+      // NEW: Predictor States
+      const [showPredictorModal, setShowPredictorModal] = useState(false);
+      const [marksInput, setMarksInput] = useState('');
+      const [predCategory, setPredCategory] = useState('UR');
+      const [predictionResult, setPredictionResult] = useState(null);
+
       const dragItem = useRef(null);
       const dragOverItem = useRef(null);
 
@@ -606,6 +612,95 @@
             return;
           }
           setCompareList([...compareList, post]);
+        }
+      };
+
+      const openPredictor = () => {
+        if (preferences.length === 0) {
+          showToast("Your list is empty! Add posts first.", "error");
+          return;
+        }
+        setPredCategory(selectedCategory === 'Total' ? 'UR' : selectedCategory);
+        setPredictionResult(null);
+        setMarksInput('');
+        setShowPredictorModal(true);
+      };
+
+      const getExpectedCutoff = (post, category) => {
+        // 1. High-Tier Exact Historical Data (Using the wider gaps: OBC -15, EWS -20, SC -30, ST -40 from UR)
+        const exactCutoffs = {
+            'B09': { 'UR': 348, 'OBC': 333, 'EWS': 328, 'SC': 318, 'ST': 308 }, // ASO MEA
+            'B17': { 'UR': 348, 'OBC': 333, 'EWS': 328, 'SC': 318, 'ST': 308 }, // ASO AFHQ
+            'B01': { 'UR': 338, 'OBC': 323, 'EWS': 318, 'SC': 308, 'ST': 298 }, // Examiner
+            'B02': { 'UR': 335, 'OBC': 320, 'EWS': 315, 'SC': 305, 'ST': 295 }, // Preventive Officer
+            'B15': { 'UR': 335, 'OBC': 320, 'EWS': 315, 'SC': 305, 'ST': 295 }, // Income Tax Inspector
+            'B16': { 'UR': 338, 'OBC': 323, 'EWS': 318, 'SC': 308, 'ST': 298 }, // ASO CSS
+            'B04': { 'UR': 322, 'OBC': 307, 'EWS': 302, 'SC': 292, 'ST': 282 }, // GST/Excise Inspector
+        };
+
+        if (exactCutoffs[post.postCode]) {
+            return exactCutoffs[post.postCode][category];
+        }
+
+        // 2. Dynamic Fallback for remaining posts based on lowered Safe Marks mapping
+        let baseUR = 285; // Absolute minimum UR cutoff boundary for Level 4 this year
+
+        if (post.payLevel === 7) {
+            baseUR = post.jobType === 'Desk' ? 335 : 320; 
+        } else if (post.payLevel === 6) {
+            baseUR = 310; // e.g., Divisional Accountant / JSO
+        } else if (post.payLevel === 5) {
+            baseUR = 298; // Auditor / Accountant
+        } else if (post.payLevel === 4) {
+            baseUR = 285; // Tax Assistant / UDC
+        }
+
+        // 3. Apply historical category deduction trends (New Rule: OBC -15, EWS -20, SC -30, ST -40)
+        const categoryModifiers = {
+            'UR': 0,
+            'OBC': -15,
+            'EWS': -20,
+            'SC': -30,
+            'ST': -40
+        };
+
+        // Expand the gap slightly more for the absolute lowest level posts (Level 4 & 5) 
+        // because the bottom of the spectrum usually has a wider spread in SSC.
+        if (post.payLevel <= 5) {
+            categoryModifiers['OBC'] = -18;
+            categoryModifiers['EWS'] = -22;
+            categoryModifiers['SC'] = -35;
+            categoryModifiers['ST'] = -45;
+        }
+
+        return baseUR + categoryModifiers[category];
+      };
+
+      const handlePredict = () => {
+        const marks = parseFloat(marksInput);
+        if (isNaN(marks) || marks <= 0 || marks > 390) {
+          showToast("Please enter valid marks between 1 and 390.", "error");
+          return;
+        }
+
+        let foundPost = null;
+        let appliedCutoff = null;
+        
+        // Loop through candidate's strict preference order
+        for (let post of preferences) {
+          const cutoff = getExpectedCutoff(post, predCategory);
+          
+          if (marks >= cutoff) {
+            foundPost = post;
+            appliedCutoff = cutoff;
+            break; // Stop at the very first post they clear!
+          }
+        }
+
+        if (foundPost) {
+          setPredictionResult({ status: 'success', post: foundPost, cutoff: appliedCutoff });
+        } else {
+          setPredictionResult({ status: 'fail' });
         }
       };
 
@@ -1089,14 +1184,14 @@
             {activeTab === 'preferences' && (
               <div className="max-w-4xl mx-auto">
                 <div className="bg-white/50 dark:bg-slate-900/60 backdrop-blur-2xl backdrop-saturate-150 rounded-[2rem] shadow-apple-glass dark:shadow-apple-glass-dark border border-white/80 dark:border-slate-700 overflow-hidden">
-                  <div className="bg-white/40 dark:bg-slate-800/50 border-b border-white/50 dark:border-slate-700 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div className="bg-white/40 dark:bg-slate-800/50 border-b border-white/50 dark:border-slate-700 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                       <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">Your Preference List</h2>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">Order your selected posts carefully. Top post is highest preference. <span className="inline-block bg-emerald-100/60 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[10px] px-2 py-0.5 rounded-lg font-semibold ml-1 uppercase tracking-wider border border-emerald-200/50 dark:border-emerald-500/30 shadow-sm"><i className="fa-solid fa-cloud-arrow-up mr-1"></i>Auto-saved</span></p>
                     </div>
                     
-                    {/* Submission / Copy Controls */}
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+                    {/* Submission / Copy / Predict Controls */}
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full md:w-auto mt-2 md:mt-0 flex-wrap justify-end">
                       
                       <form onSubmit={handleSubmission} className="flex gap-2 w-full sm:w-auto">
                         <input 
@@ -1113,9 +1208,16 @@
                           className="flex items-center justify-center gap-2 bg-blue-500/90 dark:bg-blue-600/90 backdrop-blur-md text-white hover:bg-blue-600/90 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_8px_20px_rgba(59,130,246,0.3)] transition-all transform active:scale-95 border border-white/20 dark:border-blue-500/30 px-5 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {isSubmitting ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-paper-plane opacity-80"></i>} 
-                          {isSubmitting ? 'Sending...' : 'Submit Data'}
+                          {isSubmitting ? 'Sending...' : 'Submit'}
                         </button>
                       </form>
+
+                      <button 
+                        onClick={openPredictor}
+                        className="flex items-center justify-center gap-2 bg-indigo-500/90 dark:bg-indigo-600/90 backdrop-blur-md text-white hover:bg-indigo-600/90 dark:hover:bg-indigo-500/90 px-4 py-2.5 rounded-xl text-sm font-medium shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_8px_20px_rgba(99,102,241,0.3)] transition-all transform active:scale-95 border border-white/20 dark:border-indigo-400/30 whitespace-nowrap"
+                      >
+                        <i className="fa-solid fa-wand-magic-sparkles"></i> Predict
+                      </button>
 
                       <button 
                         onClick={copyToClipboard}
@@ -1134,7 +1236,7 @@
                       {preferences.length > 0 && (
                         <button 
                           onClick={() => setShowClearConfirm(true)}
-                          className="flex items-center justify-center gap-2 bg-rose-50/80 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-500/20 px-3 py-2.5 rounded-xl text-sm font-medium border border-rose-200/50 dark:border-rose-500/30 transition-all transform active:scale-95 whitespace-nowrap ml-1"
+                          className="flex items-center justify-center gap-2 bg-rose-50/80 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-500/20 px-3 py-2.5 rounded-xl text-sm font-medium border border-rose-200/50 dark:border-rose-500/30 transition-all transform active:scale-95 whitespace-nowrap ml-1 mt-2 sm:mt-0"
                           title="Clear All Preferences"
                         >
                           <i className="fa-solid fa-trash-can"></i>
@@ -1561,6 +1663,97 @@
                       </div>
                     ))}
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* PREDICTOR MODAL */}
+          {showPredictorModal && (
+            <div className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-md z-[70] flex items-center justify-center p-4 transition-opacity">
+              <div className="bg-white/90 dark:bg-slate-900/95 backdrop-blur-2xl backdrop-saturate-150 rounded-[2rem] shadow-apple-glass dark:shadow-apple-glass-dark border border-white dark:border-slate-700/80 w-full max-w-md p-6 animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+                <div className="flex justify-between items-center mb-6 flex-shrink-0">
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <i className="fa-solid fa-wand-magic-sparkles text-indigo-500"></i> AI Post Predictor
+                  </h3>
+                  <button onClick={() => setShowPredictorModal(false)} className="w-8 h-8 flex items-center justify-center text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors shadow-sm border border-white dark:border-slate-700">
+                    <i className="fa-solid fa-times"></i>
+                  </button>
+                </div>
+
+                <div className="space-y-4 overflow-y-auto custom-scrollbar pr-1">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Candidate Category</label>
+                    <select 
+                      value={predCategory} 
+                      onChange={(e) => setPredCategory(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 py-2.5 px-3 text-sm focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm outline-none cursor-pointer"
+                    >
+                      <option value="UR">UR (Unreserved)</option>
+                      <option value="OBC">OBC</option>
+                      <option value="EWS">EWS</option>
+                      <option value="SC">SC</option>
+                      <option value="ST">ST</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Expected Marks (Out of 390)</label>
+                    <input 
+                      type="number" 
+                      placeholder="e.g. 315" 
+                      value={marksInput}
+                      onChange={(e) => setMarksInput(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 py-3 px-4 text-lg font-bold focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm outline-none placeholder-slate-300 dark:placeholder-slate-600"
+                      max="390"
+                      min="0"
+                    />
+                  </div>
+
+                  <button 
+                    onClick={handlePredict}
+                    className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-500/30 transition-all transform active:scale-95 mt-2"
+                  >
+                    Predict My Allocation
+                  </button>
+
+                  {/* Results */}
+                  {predictionResult && (
+                    <div className={`mt-6 p-5 rounded-2xl border animate-in slide-in-from-bottom-4 fade-in ${predictionResult.status === 'success' ? 'bg-emerald-50/80 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/50' : 'bg-amber-50/80 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/50'}`}>
+                      {predictionResult.status === 'success' ? (
+                        <>
+                          <h4 className="text-emerald-700 dark:text-emerald-400 font-bold mb-2 flex items-center gap-2">
+                            <i className="fa-solid fa-champagne-glasses"></i> Expected Allocation
+                          </h4>
+                          <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">Based on your preference order and expected cutoffs, you might get:</p>
+                          <div className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-emerald-100 dark:border-emerald-700/50 flex flex-col gap-1.5">
+                            <div className="flex items-center gap-2">
+                              <span className="bg-slate-800 dark:bg-slate-700 text-white text-[10px] font-bold px-2 py-0.5 rounded tracking-widest shadow-sm">{predictionResult.post.postCode}</span>
+                              <span className="font-bold text-slate-800 dark:text-slate-100">{predictionResult.post.name}</span>
+                            </div>
+                            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 pl-1"><i className={`fa-solid ${getDeptIcon(predictionResult.post.department)} opacity-50 mr-1`}></i> {predictionResult.post.department}</span>
+                            <div className="mt-2 text-[11px] bg-emerald-50 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 p-2 rounded-lg border border-emerald-100 dark:border-emerald-700/50 flex justify-between items-center">
+                              <span>Predicted Cutoff for {predictionResult.post.postCode}:</span>
+                              <span className="font-black text-sm">{predictionResult.cutoff} marks</span>
+                            </div>
+                          </div>
+                          <p className="text-[10px] text-emerald-600 dark:text-emerald-500 mt-3 text-center opacity-80">*Based on expected lower cutoffs due to high vacancies & tougher paper this year.</p>
+                        </>
+                      ) : (
+                        <>
+                          <h4 className="text-amber-700 dark:text-amber-400 font-bold mb-2 flex items-center gap-2">
+                            <i className="fa-solid fa-triangle-exclamation"></i> Marks Might Fall Short
+                          </h4>
+                          <p className="text-sm text-amber-800 dark:text-amber-200">
+                            Based on expected cutoffs, your marks may not be enough for the posts currently in your preference list. 
+                            <br/><br/>
+                            <strong>Pro Tip:</strong> Add more posts with historical low cutoffs (like Tax Assistant or UDC) to the bottom of your list to be safe!
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  )}
+
                 </div>
               </div>
             </div>
