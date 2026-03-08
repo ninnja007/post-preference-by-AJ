@@ -13,7 +13,7 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Tailwind Config for Custom Font & Performance -->
+  <!-- Tailwind Config for Custom Font & Apple Glass Performance -->
   <script>
     tailwind.config = {
       theme: {
@@ -22,7 +22,9 @@
             sans: ['Inter', 'sans-serif'],
           },
           boxShadow: {
-            'glass': '0 4px 20px 0 rgba(31, 38, 135, 0.05)',
+            'apple-glass': 'inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 8px 32px 0 rgba(31, 38, 135, 0.05)',
+            'apple-glass-hover': 'inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 16px 48px 0 rgba(31, 38, 135, 0.1)',
+            'apple-inset': 'inset 0 2px 4px rgba(0, 0, 0, 0.05)',
             'float': '0 10px 40px -10px rgba(0,0,0,0.1)',
           }
         }
@@ -65,7 +67,7 @@
       background: #94a3b8; 
     }
     
-    /* High Performance Static Mesh Background */
+    /* High Performance Static Mesh Background - Perfect for Glassmorphism */
     body {
       background-color: #f8fafc;
       background-image: 
@@ -163,58 +165,58 @@
       return 'fa-building-columns';
     };
 
-    // High-Performance "Glass" (Removed expensive backdrop-blurs, using transparent color matching instead)
+    // Apple Liquid Glass Effect logic
     const getJobTypeTheme = (jobType) => {
       switch (jobType) {
         case 'Desk':
           return {
-            bg: 'bg-gradient-to-br from-blue-50/90 to-white/95',
-            border: 'border-blue-200/60',
+            bg: 'bg-gradient-to-br from-blue-50/50 via-white/40 to-white/20 backdrop-blur-2xl backdrop-saturate-[1.5]',
+            border: 'border-white/80',
             accent: 'text-blue-600',
-            badgeBg: 'bg-blue-100',
+            badgeBg: 'bg-white/60 shadow-apple-inset border border-white/80',
             badgeText: 'text-blue-800',
             gradient: 'from-blue-100/50 to-transparent',
-            indicator: 'bg-blue-500'
+            indicator: 'bg-blue-500/80'
           };
         case 'Field/Uniform':
           return {
-            bg: 'bg-gradient-to-br from-emerald-50/90 to-white/95',
-            border: 'border-emerald-200/60',
+            bg: 'bg-gradient-to-br from-emerald-50/50 via-white/40 to-white/20 backdrop-blur-2xl backdrop-saturate-[1.5]',
+            border: 'border-white/80',
             accent: 'text-emerald-600',
-            badgeBg: 'bg-emerald-100',
+            badgeBg: 'bg-white/60 shadow-apple-inset border border-white/80',
             badgeText: 'text-emerald-800',
             gradient: 'from-emerald-100/50 to-transparent',
-            indicator: 'bg-emerald-500'
+            indicator: 'bg-emerald-500/80'
           };
         case 'Field/Desk Mix':
           return {
-            bg: 'bg-gradient-to-br from-purple-50/90 to-white/95',
-            border: 'border-purple-200/60',
+            bg: 'bg-gradient-to-br from-purple-50/50 via-white/40 to-white/20 backdrop-blur-2xl backdrop-saturate-[1.5]',
+            border: 'border-white/80',
             accent: 'text-purple-600',
-            badgeBg: 'bg-purple-100',
+            badgeBg: 'bg-white/60 shadow-apple-inset border border-white/80',
             badgeText: 'text-purple-800',
             gradient: 'from-purple-100/50 to-transparent',
-            indicator: 'bg-purple-500'
+            indicator: 'bg-purple-500/80'
           };
         case 'Field':
           return {
-            bg: 'bg-gradient-to-br from-orange-50/90 to-white/95',
-            border: 'border-orange-200/60',
+            bg: 'bg-gradient-to-br from-orange-50/50 via-white/40 to-white/20 backdrop-blur-2xl backdrop-saturate-[1.5]',
+            border: 'border-white/80',
             accent: 'text-orange-600',
-            badgeBg: 'bg-orange-100',
+            badgeBg: 'bg-white/60 shadow-apple-inset border border-white/80',
             badgeText: 'text-orange-800',
             gradient: 'from-orange-100/50 to-transparent',
-            indicator: 'bg-orange-500'
+            indicator: 'bg-orange-500/80'
           };
         default:
           return {
-            bg: 'bg-gradient-to-br from-slate-50/90 to-white/95',
-            border: 'border-slate-200/60',
+            bg: 'bg-gradient-to-br from-slate-50/50 via-white/40 to-white/20 backdrop-blur-2xl backdrop-saturate-[1.5]',
+            border: 'border-white/80',
             accent: 'text-slate-600',
-            badgeBg: 'bg-slate-100',
+            badgeBg: 'bg-white/60 shadow-apple-inset border border-white/80',
             badgeText: 'text-slate-800',
             gradient: 'from-slate-100/50 to-transparent',
-            indicator: 'bg-slate-400'
+            indicator: 'bg-slate-400/80'
           };
       }
     };
@@ -328,11 +330,11 @@
       return (
         <div className="min-h-screen flex flex-col relative z-0">
 
-          {/* HEADER (Kept blur here as it's just one element and fine for perf) */}
-          <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-700 shadow-lg">
+          {/* Dark Glass Header */}
+          <header className="sticky top-0 z-40 bg-slate-900/70 backdrop-blur-2xl backdrop-saturate-150 border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
             <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-400 to-indigo-500 flex items-center justify-center text-white shadow-md border border-white/20">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-400 to-indigo-500 flex items-center justify-center text-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.4)] border border-white/20">
                   <i className="fa-solid fa-award text-xl"></i>
                 </div>
                 <div>
@@ -341,27 +343,27 @@
                   </h1>
                   <p className="text-blue-200 text-xs mt-0.5 font-medium flex items-center gap-1.5">
                     ST Category Vacancies 
-                    <span className="bg-white/10 px-2 py-0.5 rounded-full border border-white/10 tracking-wide text-[10px] uppercase">By Abhishek Jorwal</span>
+                    <span className="bg-white/10 px-2 py-0.5 rounded-full border border-white/10 tracking-wide text-[10px] uppercase shadow-apple-inset">By Abhishek Jorwal</span>
                   </p>
                 </div>
               </div>
               
-              {/* Tabs */}
-              <div className="flex bg-slate-800/80 p-1 rounded-xl shadow-inner border border-white/5">
+              {/* Glass Tabs */}
+              <div className="flex bg-slate-800/50 p-1 rounded-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] border border-white/5">
                 <button 
                   onClick={() => setActiveTab('browse')}
-                  className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === 'browse' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-700/50'}`}
+                  className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === 'browse' ? 'bg-white/20 text-white shadow-apple-glass backdrop-blur-md border border-white/20' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}
                 >
-                  <i className="fa-solid fa-layer-group mr-2"></i> Browse
+                  <i className="fa-solid fa-layer-group mr-2 opacity-80"></i> Browse
                 </button>
                 <button 
                   onClick={() => setActiveTab('preferences')}
-                  className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${activeTab === 'preferences' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-700/50'}`}
+                  className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${activeTab === 'preferences' ? 'bg-white/20 text-white shadow-apple-glass backdrop-blur-md border border-white/20' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}
                 >
-                  <i className="fa-solid fa-list-check"></i>
+                  <i className="fa-solid fa-list-check opacity-80"></i>
                   My List 
                   {preferences.length > 0 && (
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full shadow-sm ml-1 ${activeTab === 'preferences' ? 'bg-blue-100 text-blue-700' : 'bg-blue-500 text-white'}`}>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full shadow-apple-inset border border-white/20 ml-1 ${activeTab === 'preferences' ? 'bg-white/30 text-white' : 'bg-blue-500 text-white'}`}>
                       {preferences.length}
                     </span>
                   )}
@@ -377,22 +379,22 @@
                 
                 {/* LEFT SIDEBAR: FILTERS */}
                 <div className="lg:w-72 flex-shrink-0">
-                  <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-glass border border-white p-6 sticky top-28">
+                  <div className="bg-white/50 backdrop-blur-2xl backdrop-saturate-150 rounded-[2rem] shadow-apple-glass border border-white/80 p-6 sticky top-28">
                     <div className="flex items-center gap-3 mb-6">
-                      <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center border border-blue-200/50">
+                      <div className="w-8 h-8 rounded-xl bg-white/60 text-blue-600 flex items-center justify-center border border-white/80 shadow-apple-inset">
                         <i className="fa-solid fa-sliders text-sm"></i>
                       </div>
-                      <h2 className="text-lg font-bold text-slate-800">Filters</h2>
+                      <h2 className="text-lg font-semibold text-slate-800">Filters</h2>
                     </div>
                     
                     <div className="space-y-5">
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Age Limit</label>
+                          <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Age Limit</label>
                           <select 
                             value={ageFilter} 
                             onChange={(e) => setAgeFilter(e.target.value)}
-                            className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
+                            className="w-full rounded-xl border border-white/60 py-2.5 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white/40 backdrop-blur-md outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-apple-inset"
                           >
                             <option value="All">All Ages</option>
                             <option value="18-27">18-27 yrs</option>
@@ -402,11 +404,11 @@
                           </select>
                         </div>
                         <div>
-                          <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Color Blind</label>
+                          <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Color Blind</label>
                           <select 
                             value={colorBlindFilter} 
                             onChange={(e) => setColorBlindFilter(e.target.value)}
-                            className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
+                            className="w-full rounded-xl border border-white/60 py-2.5 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white/40 backdrop-blur-md outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-apple-inset"
                           >
                             <option value="All">All Posts</option>
                             <option value="Suitable Only">Suitable</option>
@@ -415,11 +417,11 @@
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Job Type</label>
+                        <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Job Type</label>
                         <select 
                           value={jobTypeFilter} 
                           onChange={(e) => setJobTypeFilter(e.target.value)}
-                          className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
+                          className="w-full rounded-xl border border-white/60 py-2.5 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white/40 backdrop-blur-md outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-apple-inset"
                         >
                           <option value="All">All Types</option>
                           <option value="Desk">Desk Job Only</option>
@@ -430,11 +432,11 @@
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Pay Level (Grade Pay)</label>
+                        <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Pay Level</label>
                         <select 
                           value={payLevelFilter} 
                           onChange={(e) => setPayLevelFilter(e.target.value)}
-                          className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
+                          className="w-full rounded-xl border border-white/60 py-2.5 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white/40 backdrop-blur-md outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-apple-inset"
                         >
                           <option value="All">All Levels</option>
                           <option value="7">Level 7 (4600 GP)</option>
@@ -445,11 +447,11 @@
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Skill Test</label>
+                        <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Skill Test</label>
                         <select 
                           value={cptFilter} 
                           onChange={(e) => setCptFilter(e.target.value)}
-                          className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
+                          className="w-full rounded-xl border border-white/60 py-2.5 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white/40 backdrop-blur-md outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-apple-inset"
                         >
                           <option value="All">All Options</option>
                           <option value="CPT">CPT Required</option>
@@ -459,24 +461,24 @@
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Posting Preference</label>
+                        <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Posting Pref</label>
                         <select 
                           value={locationFilter} 
                           onChange={(e) => setLocationFilter(e.target.value)}
-                          className="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-sm"
+                          className="w-full rounded-xl border border-white/60 py-2.5 px-3 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white/40 backdrop-blur-md outline-none transition-all cursor-pointer font-medium text-slate-700 shadow-apple-inset"
                         >
                           <option value="All">Anywhere (All India)</option>
                           <option value="Delhi Only">Delhi Region Only</option>
                         </select>
                       </div>
 
-                      <div className="flex items-center mt-4 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                      <div className="flex items-center mt-4 bg-white/50 backdrop-blur-md p-3 rounded-xl border border-white/80 shadow-apple-glass">
                         <input 
                           type="checkbox" 
                           id="hideZero" 
                           checked={hideZeroVacancies} 
                           onChange={(e) => setHideZeroVacancies(e.target.checked)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+                          className="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
                         />
                         <label htmlFor="hideZero" className="ml-3 block text-sm font-medium text-slate-700 cursor-pointer select-none">
                           Hide 0 ST vacancy posts
@@ -484,20 +486,10 @@
                       </div>
                     </div>
 
-                    <div className="mt-8 pt-6 border-t border-slate-200/50">
-                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100 shadow-inner">
-                        <p className="text-xs font-bold text-blue-800/70 uppercase tracking-wide mb-1">ST Vacancies Found</p>
-                        <p className="text-3xl font-extrabold text-blue-700 drop-shadow-sm">{filteredPosts.reduce((acc, curr) => acc + curr.vacancies, 0)}</p>
-                      </div>
-                    </div>
-
-                    <div className="mt-6 pt-4 border-t border-slate-200/50">
-                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Color Legend</p>
-                      <div className="space-y-3 text-xs font-medium text-slate-700">
-                        <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500/80 shadow-sm block border border-blue-400"></span> Desk Job</div>
-                        <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-500/80 shadow-sm block border border-emerald-400"></span> Field / Uniform</div>
-                        <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-purple-500/80 shadow-sm block border border-purple-400"></span> Field / Desk Mix</div>
-                        <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-orange-500/80 shadow-sm block border border-orange-400"></span> Field Job</div>
+                    <div className="mt-8 pt-6 border-t border-white/40">
+                      <div className="bg-white/40 backdrop-blur-lg rounded-xl p-4 border border-white/60 shadow-apple-inset">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1">ST Vacancies Found</p>
+                        <p className="text-3xl font-semibold text-blue-600 drop-shadow-sm">{filteredPosts.reduce((acc, curr) => acc + curr.vacancies, 0)}</p>
                       </div>
                     </div>
                   </div>
@@ -505,7 +497,7 @@
 
                 {/* MAIN CONTENT: POST LIST */}
                 <div className="flex-grow">
-                  <div className="mb-6 flex justify-between items-center">
+                  <div className="mb-6 flex justify-between items-center px-2">
                     <h2 className="text-2xl font-bold text-slate-800 tracking-tight drop-shadow-sm">Available Posts <span className="text-slate-500 text-lg font-medium ml-1">({filteredPosts.length})</span></h2>
                   </div>
                   
@@ -516,13 +508,16 @@
                       const deptIcon = getDeptIcon(post.department);
                       
                       return (
-                        <div key={post.id} className={`${theme.bg} rounded-2xl shadow-glass border ${isAdded ? 'ring-2 ring-blue-500 shadow-float border-blue-400' : theme.border} p-6 hover:-translate-y-1 hover:shadow-float transition-transform duration-200 flex flex-col justify-between relative overflow-hidden group`}>
+                        <div key={post.id} className={`${theme.bg} rounded-[2rem] shadow-apple-glass ${isAdded ? 'ring-[3px] ring-blue-400/80 shadow-apple-glass-hover' : theme.border} p-6 hover:-translate-y-1 hover:shadow-apple-glass-hover transition-all duration-300 flex flex-col justify-between relative overflow-hidden group`}>
+                          
+                          {/* Top-Left Glossy edge simulation */}
+                          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-white/0 via-white to-white/0 opacity-60"></div>
                           
                           {/* Left Color Bar Indicator */}
-                          <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${theme.indicator} opacity-80`}></div>
+                          <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${theme.indicator}`}></div>
 
                           {/* Decorative Background Icon */}
-                          <i className={`fa-solid ${deptIcon} absolute -bottom-4 -right-4 text-8xl opacity-[0.04] pointer-events-none ${theme.accent}`}></i>
+                          <i className={`fa-solid ${deptIcon} absolute -bottom-4 -right-4 text-8xl opacity-[0.03] pointer-events-none ${theme.accent}`}></i>
                           
                           {/* Top Section */}
                           <div className="relative z-10 pl-3">
@@ -530,67 +525,67 @@
                               
                               <div className="flex-grow pr-2">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <span className="bg-slate-800 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm tracking-widest">{post.postCode}</span>
-                                  <h3 className="text-lg font-bold text-slate-800 leading-tight">{post.name}</h3>
+                                  <span className="bg-white/80 border border-white/50 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-lg shadow-apple-inset tracking-widest">{post.postCode}</span>
+                                  <h3 className="text-xl font-semibold text-slate-800 leading-tight">{post.name}</h3>
                                 </div>
-                                <p className="text-sm font-medium text-slate-600 flex items-center gap-1.5 line-clamp-1" title={post.department}>
-                                  <i className={`fa-solid ${deptIcon} text-slate-400 w-4 text-center`}></i> {post.department}
+                                <p className="text-sm font-medium text-slate-600/80 flex items-center gap-1.5 line-clamp-1" title={post.department}>
+                                  <i className={`fa-solid ${deptIcon} text-slate-400/60 w-4 text-center`}></i> {post.department}
                                 </p>
                               </div>
                               
                               <div className="flex-shrink-0 flex flex-col items-end">
-                                <span className="inline-flex items-center bg-white text-slate-800 text-sm font-extrabold px-3 py-1 rounded-xl border border-slate-200 shadow-sm">
-                                  {post.vacancies} <span className="text-[10px] ml-1 uppercase opacity-70 font-semibold">Posts</span>
+                                <span className="inline-flex items-center bg-white/70 backdrop-blur-md text-slate-800 text-sm font-bold px-3 py-1.5 rounded-xl border border-white/80 shadow-apple-glass">
+                                  {post.vacancies} <span className="text-[10px] ml-1 uppercase opacity-60 font-semibold">Posts</span>
                                 </span>
                               </div>
                             </div>
 
                             {/* Alert/Warning Badges: Age, Physical, CB */}
-                            <div className="flex flex-wrap gap-1.5 mt-2 mb-4">
-                              <span className="inline-flex items-center gap-1 bg-white text-slate-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-slate-200 shadow-sm uppercase tracking-wide">
-                                <i className="fa-regular fa-clock"></i> {post.ageLimit} yrs
+                            <div className="flex flex-wrap gap-2 mt-2 mb-4">
+                              <span className="inline-flex items-center gap-1 bg-white/60 text-slate-700 text-[10px] font-semibold px-2.5 py-1 rounded-full border border-white/80 shadow-sm uppercase tracking-wide">
+                                <i className="fa-regular fa-clock opacity-60"></i> {post.ageLimit} yrs
                               </span>
                               {post.colorBlindSuitable === 'NO' ? (
-                                <span className="inline-flex items-center gap-1 bg-rose-50 text-rose-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-rose-200 shadow-sm uppercase tracking-wide">
-                                  <i className="fa-solid fa-eye-slash"></i> Not for CB
+                                <span className="inline-flex items-center gap-1 bg-rose-50/80 backdrop-blur-md text-rose-700 text-[10px] font-semibold px-2.5 py-1 rounded-full border border-rose-200/80 shadow-sm uppercase tracking-wide">
+                                  <i className="fa-solid fa-eye-slash opacity-70"></i> Not for CB
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-emerald-200 shadow-sm uppercase tracking-wide">
-                                  <i className="fa-solid fa-eye"></i> CB Suitable
+                                <span className="inline-flex items-center gap-1 bg-emerald-50/80 backdrop-blur-md text-emerald-700 text-[10px] font-semibold px-2.5 py-1 rounded-full border border-emerald-200/80 shadow-sm uppercase tracking-wide">
+                                  <i className="fa-solid fa-eye opacity-70"></i> CB Suitable
                                 </span>
                               )}
                               {post.hasPhysical && (
-                                <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-800 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-200 shadow-sm uppercase tracking-wide">
-                                  <i className="fa-solid fa-dumbbell"></i> Physical Std
+                                <span className="inline-flex items-center gap-1 bg-amber-50/80 backdrop-blur-md text-amber-700 text-[10px] font-semibold px-2.5 py-1 rounded-full border border-amber-200/80 shadow-sm uppercase tracking-wide">
+                                  <i className="fa-solid fa-dumbbell opacity-70"></i> Physical Std
                                 </span>
                               )}
                             </div>
                             
                             {/* Standard Tags */}
                             <div className="flex flex-wrap gap-2 mt-4">
-                              <span className="inline-flex items-center gap-1.5 bg-white/60 text-slate-700 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-sm">
-                                <i className="fa-solid fa-indian-rupee-sign opacity-50"></i> Lvl {post.payLevel}
+                              <span className="inline-flex items-center gap-1.5 bg-white/40 backdrop-blur-md text-slate-700 text-[11px] font-medium px-2.5 py-1 rounded-xl border border-white/60 shadow-apple-inset">
+                                <i className="fa-solid fa-indian-rupee-sign opacity-40"></i> Lvl {post.payLevel}
                               </span>
-                              <span className={`inline-flex items-center gap-1.5 ${theme.badgeBg} ${theme.badgeText} text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-sm`}>
-                                <i className="fa-solid fa-briefcase opacity-50"></i> {post.jobType}
+                              <span className={`inline-flex items-center gap-1.5 ${theme.badgeBg} ${theme.badgeText} text-[11px] font-medium px-2.5 py-1 rounded-xl`}>
+                                <i className="fa-solid fa-briefcase opacity-40"></i> {post.jobType}
                               </span>
-                              <span className="inline-flex items-center gap-1.5 bg-white/60 text-slate-700 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-sm">
-                                <i className="fa-solid fa-keyboard opacity-50"></i> {post.cpt}
+                              <span className="inline-flex items-center gap-1.5 bg-white/40 backdrop-blur-md text-slate-700 text-[11px] font-medium px-2.5 py-1 rounded-xl border border-white/60 shadow-apple-inset">
+                                <i className="fa-solid fa-keyboard opacity-40"></i> {post.cpt}
                               </span>
-                              <span className="inline-flex items-center gap-1.5 bg-white/60 text-slate-700 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-200 shadow-sm">
-                                <i className="fa-solid fa-location-dot opacity-50"></i> {post.posting}
+                              <span className="inline-flex items-center gap-1.5 bg-white/40 backdrop-blur-md text-slate-700 text-[11px] font-medium px-2.5 py-1 rounded-xl border border-white/60 shadow-apple-inset">
+                                <i className="fa-solid fa-location-dot opacity-40"></i> {post.posting}
                               </span>
                             </div>
                           </div>
                           
                           {/* Actions */}
-                          <div className="flex gap-3 mt-5 pt-5 border-t border-slate-200/60 relative z-10 pl-3">
+                          <div className="flex gap-3 mt-5 pt-5 border-t border-white/30 relative z-10 pl-3">
                             {post.hasCadreBreakdown && post.vacancies > 0 ? (
                               <button 
                                 onClick={() => setSelectedPost(post.id)}
-                                className="flex-1 bg-white hover:bg-slate-50 text-slate-700 font-semibold py-2.5 rounded-xl text-sm transition-all border border-slate-200 shadow-sm hover:shadow flex items-center justify-center gap-2"
+                                className="flex-1 bg-white/60 backdrop-blur-md hover:bg-white/80 text-slate-700 font-medium py-2.5 rounded-2xl text-sm transition-all border border-white/80 shadow-apple-glass flex items-center justify-center gap-2"
                               >
-                                <i className="fa-solid fa-map-location-dot text-slate-400"></i> Zone Breakup
+                                <i className="fa-solid fa-map-location-dot opacity-50"></i> Zone Breakup
                               </button>
                             ) : (
                               <div className="flex-1"></div> 
@@ -598,16 +593,16 @@
                             
                             <button 
                               onClick={() => isAdded ? removeFromPreferences(post.id) : addToPreferences(post)}
-                              className={`flex-1 font-semibold py-2.5 rounded-xl text-sm transition-all flex items-center justify-center gap-2 shadow-sm transform active:scale-95 border ${
+                              className={`flex-1 font-medium py-2.5 rounded-2xl text-sm transition-all flex items-center justify-center gap-2 transform active:scale-95 border ${
                                 isAdded 
-                                  ? 'bg-rose-50 text-rose-600 hover:bg-rose-100 border-rose-200 hover:border-rose-300' 
-                                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 hover:shadow-md border-transparent'
+                                  ? 'bg-white/60 backdrop-blur-md text-rose-500 hover:bg-rose-50/80 border-white/80 shadow-apple-glass' 
+                                  : 'bg-blue-500/90 backdrop-blur-md text-white hover:bg-blue-600/90 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_8px_20px_rgba(59,130,246,0.3)] border-white/20'
                               }`}
                             >
                               {isAdded ? (
-                                <><i className="fa-solid fa-minus"></i> Remove</>
+                                <><i className="fa-solid fa-minus opacity-80"></i> Remove</>
                               ) : (
-                                <><i className="fa-solid fa-plus"></i> Add to List</>
+                                <><i className="fa-solid fa-plus opacity-80"></i> Add to List</>
                               )}
                             </button>
                           </div>
@@ -616,13 +611,13 @@
                     })}
                     
                     {filteredPosts.length === 0 && (
-                      <div className="col-span-full py-16 text-center text-slate-500 bg-white rounded-2xl shadow-glass border border-slate-200 flex flex-col items-center justify-center">
-                        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4 shadow-sm border border-slate-100">
-                          <i className="fa-solid fa-magnifying-glass text-3xl text-slate-300"></i>
+                      <div className="col-span-full py-16 text-center text-slate-500 bg-white/50 backdrop-blur-2xl backdrop-saturate-150 rounded-[2rem] shadow-apple-glass border border-white/80 flex flex-col items-center justify-center">
+                        <div className="w-20 h-20 bg-white/60 rounded-2xl flex items-center justify-center mb-4 shadow-apple-inset border border-white/80">
+                          <i className="fa-solid fa-magnifying-glass text-3xl text-slate-400"></i>
                         </div>
-                        <h3 className="text-lg font-bold text-slate-800 mb-1">No matches found</h3>
+                        <h3 className="text-lg font-semibold text-slate-800 mb-1">No matches found</h3>
                         <p className="text-sm">Try adjusting your filters to see more posts.</p>
-                        <button onClick={() => {setJobTypeFilter('All'); setPayLevelFilter('All'); setLocationFilter('All'); setCptFilter('All'); setAgeFilter('All'); setColorBlindFilter('All');}} className="mt-5 bg-white border border-slate-200 text-slate-700 font-semibold px-4 py-2 rounded-lg shadow-sm hover:bg-slate-50 transition-all">Reset All Filters</button>
+                        <button onClick={() => {setJobTypeFilter('All'); setPayLevelFilter('All'); setLocationFilter('All'); setCptFilter('All'); setAgeFilter('All'); setColorBlindFilter('All');}} className="mt-5 bg-white/80 border border-white/80 text-slate-700 font-medium px-5 py-2.5 rounded-xl shadow-apple-glass hover:bg-white transition-all">Reset All Filters</button>
                       </div>
                     )}
                   </div>
@@ -633,18 +628,18 @@
             {/* PREFERENCE LIST TAB */}
             {activeTab === 'preferences' && (
               <div className="max-w-4xl mx-auto">
-                <div className="bg-white/80 rounded-2xl shadow-glass border border-white overflow-hidden">
-                  <div className="bg-white/60 border-b border-slate-200 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="bg-white/50 backdrop-blur-2xl backdrop-saturate-150 rounded-[2rem] shadow-apple-glass border border-white/80 overflow-hidden">
+                  <div className="bg-white/40 border-b border-white/50 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                       <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Your Preference List</h2>
-                      <p className="text-sm text-slate-600 mt-1 font-medium">Order your selected posts carefully. Top post is highest preference. <span className="inline-block bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold ml-1 uppercase tracking-wider border border-emerald-200"><i className="fa-solid fa-cloud-arrow-up mr-1"></i>Auto-saved</span></p>
+                      <p className="text-sm text-slate-500 mt-1 font-medium">Order your selected posts carefully. Top post is highest preference. <span className="inline-block bg-emerald-100/60 text-emerald-700 text-[10px] px-2 py-0.5 rounded-lg font-semibold ml-1 uppercase tracking-wider border border-emerald-200/50 shadow-sm"><i className="fa-solid fa-cloud-arrow-up mr-1"></i>Auto-saved</span></p>
                     </div>
                     <div className="flex gap-3">
                       <button 
                         onClick={copyToClipboard}
-                        className="flex items-center gap-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white hover:from-slate-700 hover:to-slate-800 px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md transition-all transform hover:-translate-y-0.5 active:scale-95 border border-slate-700"
+                        className="flex items-center gap-2 bg-slate-800/90 backdrop-blur-md text-white hover:bg-slate-900/90 px-5 py-2.5 rounded-xl text-sm font-medium shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_8px_20px_rgba(0,0,0,0.1)] transition-all transform active:scale-95 border border-white/10"
                       >
-                        <i className="fa-regular fa-copy"></i> Copy Final List
+                        <i className="fa-regular fa-copy opacity-80"></i> Copy Final List
                       </button>
                     </div>
                   </div>
@@ -652,22 +647,22 @@
                   <div className="p-6">
                     {preferences.length === 0 ? (
                       <div className="text-center py-16 flex flex-col items-center">
-                        <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-blue-50 border-8 border-white shadow-soft mb-6">
-                          <i className="fa-solid fa-list-check text-4xl text-blue-500"></i>
+                        <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-white/60 backdrop-blur-md border border-white/80 shadow-apple-inset mb-6">
+                          <i className="fa-solid fa-list-check text-4xl text-blue-500 opacity-80"></i>
                         </div>
-                        <h3 className="text-xl font-bold text-slate-800 mb-2">Your list is empty</h3>
-                        <p className="text-slate-600 font-medium max-w-sm mx-auto mb-8">Go back to the Browse tab and add posts you are interested in applying for.</p>
+                        <h3 className="text-xl font-semibold text-slate-800 mb-2">Your list is empty</h3>
+                        <p className="text-slate-500 font-medium max-w-sm mx-auto mb-8">Go back to the Browse tab and add posts you are interested in applying for.</p>
                         <button 
                           onClick={() => setActiveTab('browse')}
-                          className="bg-blue-600 border border-blue-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:scale-95"
+                          className="bg-blue-500/90 backdrop-blur-md border border-white/20 text-white px-8 py-3 rounded-2xl font-medium hover:bg-blue-600/90 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_8px_20px_rgba(59,130,246,0.3)] transition-all transform active:scale-95"
                         >
-                          <i className="fa-solid fa-layer-group mr-2"></i> Browse Posts
+                          <i className="fa-solid fa-layer-group mr-2 opacity-80"></i> Browse Posts
                         </button>
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 px-2 flex items-center gap-2 bg-white py-2 rounded-lg border border-slate-200 justify-center shadow-sm">
-                          <i className="fa-solid fa-hand-pointer text-blue-500"></i> Drag and drop rows to set your exact priority order
+                        <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-4 px-2 flex items-center gap-2 bg-white/40 backdrop-blur-md py-2 rounded-xl border border-white/60 justify-center shadow-apple-inset">
+                          <i className="fa-solid fa-hand-pointer text-blue-500 opacity-80"></i> Drag and drop rows to set your exact priority order
                         </div>
                         
                         {preferences.map((post, index) => {
@@ -682,26 +677,27 @@
                               onDragEnter={(e) => (dragOverItem.current = index)}
                               onDragEnd={handleSort}
                               onDragOver={(e) => e.preventDefault()}
-                              className={`flex items-center gap-4 p-4 ${theme.bg} border ${theme.border} rounded-2xl hover:shadow-md transition-all group relative overflow-hidden cursor-grab active:cursor-grabbing border-l-[6px] ${theme.border.replace('border-', 'border-l-')} ${theme.indicator.replace('bg-', 'border-l-')}`}
+                              className={`flex items-center gap-4 p-4 ${theme.bg} border ${theme.border} rounded-[1.5rem] hover:shadow-apple-glass transition-all group relative overflow-hidden cursor-grab active:cursor-grabbing border-l-[6px] ${theme.border.replace('border-', 'border-l-')} ${theme.indicator.replace('bg-', 'border-l-')}`}
                             >
-                              
+                              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-white/0 via-white to-white/0 opacity-60"></div>
+
                               <div className="flex-shrink-0 flex items-center gap-3 relative z-10 w-16">
-                                <i className="fa-solid fa-grip-vertical text-slate-400 group-hover:text-slate-600 cursor-grab px-1"></i>
-                                <div className="w-8 h-8 rounded-full bg-white text-slate-700 font-bold text-sm shadow-sm flex items-center justify-center border border-slate-200">
+                                <i className="fa-solid fa-grip-vertical text-slate-400 group-hover:text-slate-600 cursor-grab px-1 transition-colors"></i>
+                                <div className="w-8 h-8 rounded-full bg-white/80 text-slate-700 font-bold text-sm shadow-apple-inset flex items-center justify-center border border-white/60">
                                   {index + 1}
                                 </div>
                               </div>
                               
-                              <div className={`hidden sm:flex flex-shrink-0 w-12 h-12 rounded-xl items-center justify-center ${theme.badgeBg} ${theme.accent} relative z-10 border border-white shadow-sm`}>
-                                <i className={`fa-solid ${deptIcon} text-lg`}></i>
+                              <div className={`hidden sm:flex flex-shrink-0 w-12 h-12 rounded-xl items-center justify-center ${theme.badgeBg} ${theme.accent} relative z-10`}>
+                                <i className={`fa-solid ${deptIcon} text-lg opacity-80`}></i>
                               </div>
 
                               <div className="flex-grow relative z-10 pr-4">
-                                <h4 className="font-bold text-slate-800 text-base mb-1">
-                                  <span className="text-blue-600 font-black mr-2 text-xs tracking-wider">[{post.postCode}]</span>
+                                <h4 className="font-semibold text-slate-800 text-base mb-1">
+                                  <span className="text-blue-500 font-bold mr-2 text-xs tracking-wider">[{post.postCode}]</span>
                                   {post.name}
                                 </h4>
-                                <div className="flex flex-wrap items-center gap-y-1 gap-x-3 text-xs font-medium text-slate-600">
+                                <div className="flex flex-wrap items-center gap-y-1 gap-x-3 text-xs font-medium text-slate-500">
                                   <span className="flex items-center gap-1.5"><i className={`fa-solid ${deptIcon} opacity-40`}></i> {post.department}</span>
                                   <span className="w-1 h-1 rounded-full bg-slate-300"></span>
                                   <span>Level {post.payLevel}</span>
@@ -711,37 +707,37 @@
                                   {(post.colorBlindSuitable === 'NO' || post.hasPhysical) && <span className="w-1 h-1 rounded-full bg-slate-300 ml-1"></span>}
                                   
                                   {post.colorBlindSuitable === 'NO' && 
-                                    <span className="text-rose-700 font-bold bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200 ml-1 shadow-sm">Not for CB</span>
+                                    <span className="text-rose-700 font-semibold bg-rose-50/80 px-1.5 py-0.5 rounded-md border border-rose-200/50 ml-1 shadow-sm">Not for CB</span>
                                   }
                                   {post.hasPhysical && 
-                                    <span className="text-amber-800 font-bold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 ml-1 shadow-sm">Physical Std</span>
+                                    <span className="text-amber-700 font-semibold bg-amber-50/80 px-1.5 py-0.5 rounded-md border border-amber-200/50 ml-1 shadow-sm">Physical Std</span>
                                   }
                                 </div>
                               </div>
                               
                               <div className="flex items-center gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity relative z-10">
-                                <div className="flex flex-col gap-1 mr-2 bg-white rounded-lg border border-slate-200 p-1 shadow-sm">
+                                <div className="flex flex-col gap-1 mr-2 bg-white/50 backdrop-blur-md rounded-xl border border-white/80 p-1 shadow-apple-inset">
                                   <button 
                                     onClick={() => movePreference(index, 'up')}
                                     disabled={index === 0}
-                                    className="p-1 w-7 h-7 flex items-center justify-center text-slate-500 hover:text-blue-700 hover:bg-blue-50 rounded-md disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-500 transition-colors"
+                                    className="p-1 w-7 h-7 flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-white/80 rounded-lg disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-500 transition-colors shadow-sm"
                                   >
                                     <i className="fa-solid fa-chevron-up text-xs"></i>
                                   </button>
                                   <button 
                                     onClick={() => movePreference(index, 'down')}
                                     disabled={index === preferences.length - 1}
-                                    className="p-1 w-7 h-7 flex items-center justify-center text-slate-500 hover:text-blue-700 hover:bg-blue-50 rounded-md disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-500 transition-colors"
+                                    className="p-1 w-7 h-7 flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-white/80 rounded-lg disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-500 transition-colors shadow-sm"
                                   >
                                     <i className="fa-solid fa-chevron-down text-xs"></i>
                                   </button>
                                 </div>
                                 <button 
                                   onClick={() => removeFromPreferences(post.id)}
-                                  className="w-10 h-10 flex items-center justify-center bg-white text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors border border-slate-200 hover:border-rose-200 shadow-sm"
+                                  className="w-10 h-10 flex items-center justify-center bg-white/60 backdrop-blur-md text-rose-500 hover:text-rose-700 hover:bg-white rounded-xl transition-colors border border-white/80 shadow-apple-glass"
                                   title="Remove from list"
                                 >
-                                  <i className="fa-solid fa-trash-can"></i>
+                                  <i className="fa-solid fa-trash-can opacity-80"></i>
                                 </button>
                               </div>
                             </div>
@@ -753,14 +749,14 @@
                 </div>
                 
                 {preferences.length > 0 && (
-                  <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200 shadow-sm flex items-start gap-4 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-2 h-full bg-blue-500"></div>
-                    <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center flex-shrink-0 text-blue-600 border border-blue-100">
-                      <i className="fa-solid fa-lightbulb text-xl"></i>
+                  <div className="mt-8 bg-gradient-to-r from-blue-50/80 to-white/50 backdrop-blur-xl rounded-[2rem] p-6 border border-white/80 shadow-apple-glass flex items-start gap-4 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-2 h-full bg-blue-400"></div>
+                    <div className="w-10 h-10 rounded-xl bg-white/80 shadow-apple-inset flex items-center justify-center flex-shrink-0 text-blue-500 border border-white">
+                      <i className="fa-solid fa-lightbulb text-lg"></i>
                     </div>
-                    <div className="text-sm text-blue-900 leading-relaxed font-medium">
-                      <p className="font-bold text-base mb-1">Pro Tip for Preference Filling</p>
-                      <p>Always fill higher grade pay (Level 7) posts first unless you have a strict geographical constraint (e.g., you only want your home state and are willing to take a Level 4/5 post to get it). Pay close attention to the <strong className="text-rose-700 bg-white px-1 py-0.5 rounded shadow-sm border border-rose-100">Not for CB</strong> tag if you are color blind, as those allocations will be cancelled if you fail the medical.</p>
+                    <div className="text-sm text-slate-700 leading-relaxed font-medium">
+                      <p className="font-semibold text-slate-800 text-base mb-1">Pro Tip for Preference Filling</p>
+                      <p>Always fill higher grade pay (Level 7) posts first unless you have a strict geographical constraint (e.g., you only want your home state and are willing to take a Level 4/5 post to get it). Pay close attention to the <strong className="text-rose-600 bg-white/80 px-1.5 py-0.5 rounded shadow-sm border border-white">Not for CB</strong> tag if you are color blind, as those allocations will be cancelled if you fail the medical.</p>
                     </div>
                   </div>
                 )}
@@ -770,12 +766,111 @@
           </main>
 
           {/* FOOTER */}
-          <footer className="relative z-10 bg-white/60 text-slate-600 py-10 text-center text-sm border-t border-slate-200 mt-auto shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.02)]">
-            <p className="flex items-center justify-center gap-2 font-semibold">
-              Designed & Developed with <i className="fa-solid fa-heart text-rose-500"></i> by <span className="text-slate-900 font-bold tracking-wide">Abhishek Jorwal</span>
+          <footer className="relative z-10 bg-white/30 backdrop-blur-xl text-slate-500 py-10 text-center text-sm border-t border-white/40 mt-auto shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.02)]">
+            <p className="flex items-center justify-center gap-2 font-medium">
+              Designed & Developed with <i className="fa-solid fa-heart text-rose-400"></i> by <span className="text-slate-800 font-semibold tracking-wide">Abhishek Jorwal</span>
             </p>
-            <p className="mt-3 text-xs opacity-80 max-w-lg mx-auto leading-relaxed font-medium">This tool is designed to assist ST category candidates in organizing their preferences. Data is sourced from official SSC vacancy PDFs. Always cross-check final choices with official SSC documentation.</p>
+            <p className="mt-3 text-xs opacity-80 max-w-lg mx-auto leading-relaxed">This tool is designed to assist ST category candidates in organizing their preferences. Data is sourced from official SSC vacancy PDFs. Always cross-check final choices with official SSC documentation.</p>
           </footer>
+
+          {/* MODAL FOR STATE-WISE BREAKDOWN */}
+          {selectedPost && (
+            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-opacity">
+              <div className="bg-white/80 backdrop-blur-2xl backdrop-saturate-150 rounded-[2rem] shadow-apple-glass border border-white/80 w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+                
+                {/* Modal Header */}
+                <div className="px-6 py-5 border-b border-white/50 flex justify-between items-center bg-white/40">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-apple-inset border border-white/80 ${getJobTypeTheme(postsData.find(p => p.id === selectedPost)?.jobType).badgeBg} ${getJobTypeTheme(postsData.find(p => p.id === selectedPost)?.jobType).accent}`}>
+                      <i className={`fa-solid ${getDeptIcon(postsData.find(p => p.id === selectedPost)?.department || '')} text-xl`}></i>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-800 leading-tight">
+                        {postsData.find(p => p.id === selectedPost)?.name}
+                      </h3>
+                      <p className="text-sm font-semibold text-slate-600 mt-0.5">ST Category State/Zone Breakup</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setSelectedPost(null)}
+                    className="w-10 h-10 flex items-center justify-center text-slate-500 bg-white/50 hover:bg-white/80 rounded-full transition-colors shadow-sm border border-white/60"
+                  >
+                    <i className="fa-solid fa-times text-lg"></i>
+                  </button>
+                </div>
+
+                {/* Modal Controls */}
+                <div className="px-6 py-3 border-b border-white/40 bg-white/20 flex justify-between items-center">
+                  <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider flex items-center gap-2">
+                    <i className="fa-solid fa-sort"></i> Sort Data By
+                  </span>
+                  <select 
+                    value={cadreSortType}
+                    onChange={(e) => setCadreSortType(e.target.value)}
+                    className="text-sm border border-white/60 rounded-xl py-1.5 pl-3 pr-8 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white/60 backdrop-blur-md shadow-sm font-medium text-slate-700 outline-none cursor-pointer"
+                  >
+                    <option value="vacancies">High to Low Vacancies</option>
+                    <option value="northToSouth">North to South (Geography)</option>
+                    <option value="alphabetical">Alphabetical (A-Z)</option>
+                  </select>
+                </div>
+
+                {/* Modal Content - Table */}
+                <div className="p-0 overflow-y-auto flex-grow bg-white/10">
+                  <table className="w-full text-left text-sm text-slate-700 border-collapse">
+                    <thead className="bg-white/40 backdrop-blur-md text-slate-600 text-[11px] uppercase tracking-wider font-bold sticky top-0 z-10 shadow-sm border-b border-white/50">
+                      <tr>
+                        <th className="px-6 py-4">Zone / Cadre Location</th>
+                        <th className="px-6 py-4 text-right">ST Vacancies</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/30">
+                      {getSortedCadres(selectedPost).length > 0 ? (
+                        getSortedCadres(selectedPost).map((cadre, idx) => (
+                          <tr key={idx} className="hover:bg-white/40 transition-colors group">
+                            <td className="px-6 py-3.5 font-semibold text-slate-700">
+                              <span className="flex items-center gap-2">
+                                <i className="fa-solid fa-map-pin text-slate-400 group-hover:text-blue-500 transition-colors text-xs"></i>
+                                {cadre.name}
+                              </span>
+                              {cadreSortType === 'northToSouth' && (
+                                <span className="ml-5 mt-1 block text-[10px] text-blue-700 bg-blue-50/80 px-2 py-0.5 rounded border border-blue-200/50 font-bold max-w-max shadow-sm">
+                                  Geographical Rank: {northToSouthOrder[cadre.name] || '-'}
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-3.5 text-right font-black text-slate-800 text-base">
+                              {cadre.count}
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="2" className="px-6 py-12 text-center">
+                            <div className="w-16 h-16 bg-white/50 rounded-full flex items-center justify-center mx-auto mb-3 shadow-apple-inset border border-white">
+                              <i className="fa-regular fa-folder-open text-2xl text-slate-400"></i>
+                            </div>
+                            <p className="text-slate-600 font-medium">No zone-wise breakdown available for this post.</p>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                
+                {/* Modal Footer */}
+                <div className="px-6 py-4 border-t border-white/50 bg-white/30 backdrop-blur-md flex justify-end">
+                  <button 
+                    onClick={() => setSelectedPost(null)}
+                    className="bg-slate-800/90 backdrop-blur-md text-white border border-white/20 px-6 py-2.5 rounded-xl font-semibold hover:bg-slate-900 shadow-md transition-all active:scale-95"
+                  >
+                    Close Window
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          )}
 
         </div>
       );
