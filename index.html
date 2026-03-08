@@ -518,6 +518,7 @@
       // NEW: Predictor States
       const [showPredictorModal, setShowPredictorModal] = useState(false);
       const [marksInput, setMarksInput] = useState('');
+      const [compMarksInput, setCompMarksInput] = useState(''); // NEW: Computer Marks
       const [predCategory, setPredCategory] = useState('UR');
       const [predictionResult, setPredictionResult] = useState(null);
 
@@ -623,63 +624,99 @@
         setPredCategory(selectedCategory === 'Total' ? 'UR' : selectedCategory);
         setPredictionResult(null);
         setMarksInput('');
+        setCompMarksInput('');
         setShowPredictorModal(true);
       };
 
       const getExpectedCutoff = (post, category) => {
-        // 1. High-Tier Exact Historical Data (Using the wider gaps: OBC -15, EWS -20, SC -30, ST -40 from UR)
-        const exactCutoffs = {
-            'B09': { 'UR': 348, 'OBC': 333, 'EWS': 328, 'SC': 318, 'ST': 308 }, // ASO MEA
-            'B17': { 'UR': 348, 'OBC': 333, 'EWS': 328, 'SC': 318, 'ST': 308 }, // ASO AFHQ
-            'B01': { 'UR': 338, 'OBC': 323, 'EWS': 318, 'SC': 308, 'ST': 298 }, // Examiner
-            'B02': { 'UR': 335, 'OBC': 320, 'EWS': 315, 'SC': 305, 'ST': 295 }, // Preventive Officer
-            'B15': { 'UR': 335, 'OBC': 320, 'EWS': 315, 'SC': 305, 'ST': 295 }, // Income Tax Inspector
-            'B16': { 'UR': 338, 'OBC': 323, 'EWS': 318, 'SC': 308, 'ST': 298 }, // ASO CSS
-            'B04': { 'UR': 322, 'OBC': 307, 'EWS': 302, 'SC': 292, 'ST': 282 }, // GST/Excise Inspector
-        };
+        let baseUR = 305; // Absolute minimum UR cutoff boundary (Level 4 UDC)
+        const postCode = post.postCode;
 
-        if (exactCutoffs[post.postCode]) {
-            return exactCutoffs[post.postCode][category];
+        // 1. Analyze 5-year historical desirability hierarchy mapped to the 350-305 range
+        
+        // Premium ASOs & Top Desk Jobs
+        if (['B09', 'B16', 'B17', 'B10', 'B14'].includes(postCode)) {
+            baseUR = 350; // MEA, CSS, AFHQ, ECI, Railways
+        } 
+        // Premium Field & High-Demand Desk
+        else if (['B01', 'B15', 'B12', 'B03'].includes(postCode)) {
+            baseUR = 345; // Examiner, Income Tax, IB, EPFO
+        } 
+        // High-Power Field Jobs
+        else if (['B02', 'B13', 'B31', 'B05'].includes(postCode)) {
+            baseUR = 342; // Preventive Officer, CBI, NIA, ED
+        } 
+        // Standard Field Jobs & Top Level 6
+        else if (['B04', 'B08', 'B20'].includes(postCode)) {
+            baseUR = 335; // GST Inspector, CBN Inspector, Executive Assistant
+        } 
+        // Remaining Level 7
+        else if (post.payLevel === 7) {
+            baseUR = 330; 
+        } 
+        // Remaining Level 6
+        else if (post.payLevel === 6) {
+            if (['C37', 'C36'].includes(postCode)) baseUR = 320; // JSO / Stat Inv (Special qual posts)
+            else baseUR = 325; // Other Assistants (Mines, Textiles, etc.)
+        } 
+        // Level 5 (Auditors / Accountants)
+        else if (post.payLevel === 5) {
+            if (['D38', 'D39'].includes(postCode)) baseUR = 315; // CAG & CGDA highly preferred
+            else baseUR = 312; // Postal, CGCA
+        } 
+        // Level 4 (Tax Assistants & UDC)
+        else if (post.payLevel === 4) {
+            if (postCode === 'D55') baseUR = 310; // TA CBDT (Historically preferred over CBIC)
+            else if (postCode === 'D43') baseUR = 308; // TA CBIC
+            else baseUR = 305; // All UDCs, BRO, etc.
         }
 
-        // 2. Dynamic Fallback for remaining posts based on lowered Safe Marks mapping
-        let baseUR = 285; // Absolute minimum UR cutoff boundary for Level 4 this year
+        // 2. Dynamic gap calculation targeting specific category bounds
+        // Bounds: UR(350->305), OBC(340->295), EWS(330->295), SC(320->285), ST(310->275)
+        let ewsOffset = -10;
+        let scOffset = -20;
+        let stOffset = -30;
 
-        if (post.payLevel === 7) {
-            baseUR = post.jobType === 'Desk' ? 335 : 320; 
-        } else if (post.payLevel === 6) {
-            baseUR = 310; // e.g., Divisional Accountant / JSO
-        } else if (post.payLevel === 5) {
-            baseUR = 298; // Auditor / Accountant
-        } else if (post.payLevel === 4) {
-            baseUR = 285; // Tax Assistant / UDC
+        if (baseUR >= 340) {
+            ewsOffset = -20; scOffset = -30; stOffset = -40;
+        } else if (baseUR >= 330) {
+            ewsOffset = -17; scOffset = -27; stOffset = -37;
+        } else if (baseUR >= 320) {
+            ewsOffset = -15; scOffset = -25; stOffset = -35;
+        } else if (baseUR >= 310) {
+            ewsOffset = -12; scOffset = -22; stOffset = -32;
         }
 
-        // 3. Apply historical category deduction trends (New Rule: OBC -15, EWS -20, SC -30, ST -40)
         const categoryModifiers = {
             'UR': 0,
-            'OBC': -15,
-            'EWS': -20,
-            'SC': -30,
-            'ST': -40
+            'OBC': -10, // OBC is reliably close to UR, locked at -10 gap
+            'EWS': ewsOffset,
+            'SC': scOffset,
+            'ST': stOffset
         };
-
-        // Expand the gap slightly more for the absolute lowest level posts (Level 4 & 5) 
-        // because the bottom of the spectrum usually has a wider spread in SSC.
-        if (post.payLevel <= 5) {
-            categoryModifiers['OBC'] = -18;
-            categoryModifiers['EWS'] = -22;
-            categoryModifiers['SC'] = -35;
-            categoryModifiers['ST'] = -45;
-        }
 
         return baseUR + categoryModifiers[category];
       };
 
       const handlePredict = () => {
         const marks = parseFloat(marksInput);
+        const compMarks = parseFloat(compMarksInput);
+
         if (isNaN(marks) || marks <= 0 || marks > 390) {
           showToast("Please enter valid marks between 1 and 390.", "error");
+          return;
+        }
+        if (isNaN(compMarks) || compMarks < 0 || compMarks > 60) {
+          showToast("Please enter valid computer marks between 0 and 60.", "error");
+          return;
+        }
+
+        const cptCutoffs = { 'UR': 27, 'OBC': 24, 'EWS': 24, 'SC': 21, 'ST': 21 };
+        const basicCompCutoffs = { 'UR': 18, 'OBC': 15, 'EWS': 15, 'SC': 12, 'ST': 12 };
+
+        // Immediately fail if they don't even meet the absolute minimum basic computer cutoff
+        if (compMarks < basicCompCutoffs[predCategory]) {
+          setPredictionResult({ status: 'fail_comp', minReq: basicCompCutoffs[predCategory] });
           return;
         }
 
@@ -688,6 +725,13 @@
         
         // Loop through candidate's strict preference order
         for (let post of preferences) {
+          // Check specific computer requirement for this post
+          const reqCompMarks = post.cpt === 'CPT' ? cptCutoffs[predCategory] : basicCompCutoffs[predCategory];
+          
+          if (compMarks < reqCompMarks) {
+            continue; // Skip this specific post because they failed the CPT requirement
+          }
+
           const cutoff = getExpectedCutoff(post, predCategory);
           
           if (marks >= cutoff) {
@@ -1697,17 +1741,31 @@
                     </select>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Expected Marks (Out of 390)</label>
-                    <input 
-                      type="number" 
-                      placeholder="e.g. 315" 
-                      value={marksInput}
-                      onChange={(e) => setMarksInput(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 dark:border-slate-700 py-3 px-4 text-lg font-bold focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm outline-none placeholder-slate-300 dark:placeholder-slate-600"
-                      max="390"
-                      min="0"
-                    />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Marks (Out of 390)</label>
+                      <input 
+                        type="number" 
+                        placeholder="e.g. 315" 
+                        value={marksInput}
+                        onChange={(e) => setMarksInput(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 py-3 px-4 text-base font-bold focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm outline-none placeholder-slate-300 dark:placeholder-slate-600"
+                        max="390"
+                        min="0"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Computer (Out of 60)</label>
+                      <input 
+                        type="number" 
+                        placeholder="e.g. 28" 
+                        value={compMarksInput}
+                        onChange={(e) => setCompMarksInput(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 py-3 px-4 text-base font-bold focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm outline-none placeholder-slate-300 dark:placeholder-slate-600"
+                        max="60"
+                        min="0"
+                      />
+                    </div>
                   </div>
 
                   <button 
@@ -1719,7 +1777,13 @@
 
                   {/* Results */}
                   {predictionResult && (
-                    <div className={`mt-6 p-5 rounded-2xl border animate-in slide-in-from-bottom-4 fade-in ${predictionResult.status === 'success' ? 'bg-emerald-50/80 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/50' : 'bg-amber-50/80 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/50'}`}>
+                    <div className={`mt-6 p-5 rounded-2xl border animate-in slide-in-from-bottom-4 fade-in ${
+                      predictionResult.status === 'success' 
+                        ? 'bg-emerald-50/80 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/50' 
+                        : predictionResult.status === 'fail_comp'
+                        ? 'bg-rose-50/80 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800/50'
+                        : 'bg-amber-50/80 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/50'
+                    }`}>
                       {predictionResult.status === 'success' ? (
                         <>
                           <h4 className="text-emerald-700 dark:text-emerald-400 font-bold mb-2 flex items-center gap-2">
@@ -1737,7 +1801,17 @@
                               <span className="font-black text-sm">{predictionResult.cutoff} marks</span>
                             </div>
                           </div>
-                          <p className="text-[10px] text-emerald-600 dark:text-emerald-500 mt-3 text-center opacity-80">*Based on expected lower cutoffs due to high vacancies & tougher paper this year.</p>
+                        </>
+                      ) : predictionResult.status === 'fail_comp' ? (
+                        <>
+                          <h4 className="text-rose-700 dark:text-rose-400 font-bold mb-2 flex items-center gap-2">
+                            <i className="fa-solid fa-circle-xmark"></i> Computer Section Failed
+                          </h4>
+                          <p className="text-sm text-rose-800 dark:text-rose-200">
+                            You need a minimum of <strong>{predictionResult.minReq} marks</strong> in the Computer Knowledge Test for your category ({predCategory}) to be eligible for ANY post. 
+                            <br/><br/>
+                            (Note: CPT posts require even higher marks).
+                          </p>
                         </>
                       ) : (
                         <>
