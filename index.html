@@ -86,82 +86,227 @@
   <script type="text/babel">
     const { useState, useMemo, useEffect, useRef } = React;
 
-    // --- DATA TRANSCRIPTION WITH CPT/DEST, POST CODES, AGE, CB & PHYSICAL ---
+    // --- FULL OFFICIAL DATA: ALL 58 POSTS (B01 - D58) WITH EXACT CATEGORY VACANCIES (15,130 TOTAL) ---
     const postsData = [
-      { id: 'aso_css', postCode: 'B16', name: 'ASO', department: 'DoPT (CSS)', vacancies: 74, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'CPT', ageLimit: '20-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'aso_mea', postCode: 'B09', name: 'ASO', department: 'Ministry of External Affairs', vacancies: 6, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'CPT', ageLimit: '20-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'aso_afhq', postCode: 'B17', name: 'ASO', department: 'Ministry of Defence (AFHQ)', vacancies: 9, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'CPT', ageLimit: '20-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'aso_railways', postCode: 'B14', name: 'ASO', department: 'Railways', vacancies: 4, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'NA', ageLimit: '20-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'aso_ib', postCode: 'B12', name: 'ASO', department: 'Intelligence Bureau', vacancies: 19, payLevel: 7, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'aso_epfo', postCode: 'B03', name: 'ASO', department: 'EPFO', vacancies: 5, payLevel: 7, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'aso_nic', postCode: 'B06', name: 'ASO', department: 'NIC', vacancies: 0, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: false },
-      { id: 'aso_cat', postCode: 'B07', name: 'ASO', department: 'CAT', vacancies: 0, payLevel: 7, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '20-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'aso_eci', postCode: 'B10', name: 'ASO', department: 'Election Commission', vacancies: 0, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'NA', ageLimit: '20-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'aso_meity', postCode: 'B11', name: 'ASO', department: 'MeitY', vacancies: 1, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'gst_inspector', postCode: 'B04', name: 'GST Inspector', department: 'CBIC', vacancies: 82, payLevel: 7, jobType: 'Field/Uniform', posting: 'All India', hasCadreBreakdown: true, cpt: 'CPT', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: true },
-      { id: 'po', postCode: 'B02', name: 'Preventive Officer', department: 'CBIC', vacancies: 20, payLevel: 7, jobType: 'Field/Uniform', posting: 'Coastal/All India', hasCadreBreakdown: true, cpt: 'CPT', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: true },
-      { id: 'examiner', postCode: 'B01', name: 'Examiner', department: 'CBIC', vacancies: 24, payLevel: 7, jobType: 'Field/Desk Mix', posting: 'Coastal/All India', hasCadreBreakdown: true, cpt: 'CPT', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: true },
-      { id: 'iti', postCode: 'B15', name: 'Income Tax Inspector', department: 'CBDT', vacancies: 37, payLevel: 7, jobType: 'Field/Desk Mix', posting: 'All India', hasCadreBreakdown: true, cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'ip', postCode: 'B19', name: 'Inspector of Posts', department: 'Postal', vacancies: 3, payLevel: 7, jobType: 'Field', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'si_cbi', postCode: 'B13', name: 'Sub-Inspector', department: 'CBI', vacancies: 5, payLevel: 7, jobType: 'Field/Uniform', posting: 'All India', cpt: 'NA', ageLimit: '20-30', colorBlindSuitable: 'YES', hasPhysical: true },
-      { id: 'si_nia', postCode: 'B31', name: 'Sub-Inspector', department: 'NIA', vacancies: 1, payLevel: 6, jobType: 'Field/Uniform', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: true },
-      { id: 'si_ncb', postCode: 'B30', name: 'Sub-Inspector', department: 'NCB', vacancies: 7, payLevel: 6, jobType: 'Field/Uniform', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: true },
-      { id: 'aeo', postCode: 'B05', name: 'Assistant Enforcement Officer', department: 'ED', vacancies: 2, payLevel: 7, jobType: 'Field', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: true },
-      { id: 'ea', postCode: 'B20', name: 'Executive Assistant', department: 'CBIC', vacancies: 12, payLevel: 6, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true, cpt: 'CPT', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'asst_mines', postCode: 'B25', name: 'Assistant', department: 'Ministry of Mines', vacancies: 2, payLevel: 6, jobType: 'Desk', posting: 'Delhi', cpt: 'CPT', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'asst_icg', postCode: 'B27', name: 'Assistant', department: 'Indian Coast Guard', vacancies: 1, payLevel: 6, jobType: 'Desk', posting: 'Coastal/Delhi', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: false },
-      { id: 'asst_ncb', postCode: 'B29', name: 'Assistant', department: 'NCB', vacancies: 1, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'sec_head', postCode: 'B34', name: 'Section Head', department: 'DGFT', vacancies: 5, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'CPT', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'stat_inv', postCode: 'C36', name: 'Statistical Investigator', department: 'MoSPI', vacancies: 12, payLevel: 6, jobType: 'Field/Desk Mix', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: false },
-      { id: 'jso', postCode: 'C37', name: 'Junior Statistical Officer', department: 'MoSPI', vacancies: 15, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-32', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'os', postCode: 'B33', name: 'Office Superintendent', department: 'CBDT', vacancies: 498, payLevel: 6, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true, cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'auditor_cgda', postCode: 'D39', name: 'Auditor', department: 'CGDA', vacancies: 88, payLevel: 5, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'acct_cag', postCode: 'D38', name: 'Accountant / Jr Accountant', department: 'CAG', vacancies: 17, payLevel: 5, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'acct_postal', postCode: 'D40', name: 'Accountant', department: 'Postal', vacancies: 6, payLevel: 5, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'acct_cgca', postCode: 'D41', name: 'Accountant', department: 'CGCA', vacancies: 3, payLevel: 5, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'NO', hasPhysical: false },
-      { id: 'ta_cbic', postCode: 'D43', name: 'Tax Assistant', department: 'GST Dept (CBIC)', vacancies: 82, payLevel: 4, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true, cpt: 'DEST', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'ta_cbdt', postCode: 'D55', name: 'Tax Assistant', department: 'Income Tax (CBDT)', vacancies: 78, payLevel: 4, jobType: 'Desk', posting: 'All India', hasCadreBreakdown: true, cpt: 'DEST', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'udc_msme', postCode: 'D42', name: 'UDC / SSA', department: 'MSME', vacancies: 5, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'udc_dst', postCode: 'D44', name: 'UDC / SSA', department: 'Science & Tech', vacancies: 4, payLevel: 4, jobType: 'Desk', posting: 'Delhi', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'udc_mines', postCode: 'D47', name: 'UDC / SSA', department: 'Mines', vacancies: 3, payLevel: 4, jobType: 'Desk', posting: 'Delhi', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'udc_dgde', postCode: 'D48', name: 'UDC / SSA', department: 'Defence Estates', vacancies: 1, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'udc_meity', postCode: 'D49', name: 'UDC / SSA', department: 'MeitY', vacancies: 1, payLevel: 4, jobType: 'Desk', posting: 'Delhi', cpt: 'DEST', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
-      { id: 'udc_textiles', postCode: 'D50', name: 'UDC / SSA', department: 'Textiles', vacancies: 1, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'examiner', postCode: 'B01', name: 'Examiner', department: 'CBIC', vacancies: { UR: 68, SC: 18, ST: 24, OBC: 13, EWS: 14, Total: 137 }, payLevel: 7, jobType: 'Field/Desk Mix', posting: 'Coastal/All India', cpt: 'CPT', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: true, hasCadreBreakdown: true },
+      { id: 'po', postCode: 'B02', name: 'Preventive Officer', department: 'CBIC', vacancies: { UR: 138, SC: 75, ST: 20, OBC: 91, EWS: 29, Total: 353 }, payLevel: 7, jobType: 'Field/Uniform', posting: 'Coastal/All India', cpt: 'CPT', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: true, hasCadreBreakdown: true },
+      { id: 'aso_epfo', postCode: 'B03', name: 'ASO', department: 'EPFO', vacancies: { UR: 36, SC: 17, ST: 5, OBC: 30, EWS: 6, Total: 94 }, payLevel: 7, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'gst_inspector', postCode: 'B04', name: 'GST Inspector', department: 'CBIC', vacancies: { UR: 611, SC: 175, ST: 82, OBC: 269, EWS: 169, Total: 1306 }, payLevel: 7, jobType: 'Field/Uniform', posting: 'All India', cpt: 'CPT', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: true, hasCadreBreakdown: true },
+      { id: 'aeo', postCode: 'B05', name: 'Assistant Enforcement Officer', department: 'Enforcement Directorate', vacancies: { UR: 1, SC: 2, ST: 2, OBC: 13, EWS: 0, Total: 18 }, payLevel: 7, jobType: 'Field', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: true },
+      { id: 'aso_nic', postCode: 'B06', name: 'ASO', department: 'NIC', vacancies: { UR: 3, SC: 0, ST: 0, OBC: 0, EWS: 1, Total: 4 }, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: false },
+      { id: 'aso_cat', postCode: 'B07', name: 'ASO', department: 'CAT', vacancies: { UR: 0, SC: 0, ST: 0, OBC: 0, EWS: 1, Total: 1 }, payLevel: 7, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '20-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'inspector_cbn', postCode: 'B08', name: 'Inspector', department: 'Central Bureau of Narcotics', vacancies: { UR: 1, SC: 1, ST: 0, OBC: 1, EWS: 1, Total: 4 }, payLevel: 7, jobType: 'Field/Uniform', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: true },
+      { id: 'aso_mea', postCode: 'B09', name: 'ASO', department: 'Ministry of External Affairs', vacancies: { UR: 46, SC: 17, ST: 6, OBC: 30, EWS: 11, Total: 110 }, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'CPT', ageLimit: '20-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'aso_eci', postCode: 'B10', name: 'ASO', department: 'Election Commission', vacancies: { UR: 0, SC: 0, ST: 0, OBC: 5, EWS: 1, Total: 6 }, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'NA', ageLimit: '20-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'aso_meity', postCode: 'B11', name: 'ASO', department: 'MeitY', vacancies: { UR: 3, SC: 0, ST: 1, OBC: 0, EWS: 0, Total: 4 }, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'aso_ib', postCode: 'B12', name: 'ASO', department: 'Intelligence Bureau', vacancies: { UR: 100, SC: 24, ST: 19, OBC: 39, EWS: 15, Total: 197 }, payLevel: 7, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'si_cbi', postCode: 'B13', name: 'Sub Inspector', department: 'CBI', vacancies: { UR: 52, SC: 12, ST: 5, OBC: 18, EWS: 6, Total: 93 }, payLevel: 7, jobType: 'Field/Uniform', posting: 'All India', cpt: 'NA', ageLimit: '20-30', colorBlindSuitable: 'YES', hasPhysical: true },
+      { id: 'aso_railways', postCode: 'B14', name: 'ASO', department: 'Ministry of Railways', vacancies: { UR: 23, SC: 4, ST: 4, OBC: 14, EWS: 3, Total: 48 }, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'NA', ageLimit: '20-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'iti', postCode: 'B15', name: 'Income Tax Inspector', department: 'CBDT', vacancies: { UR: 188, SC: 55, ST: 37, OBC: 102, EWS: 30, Total: 412 }, payLevel: 7, jobType: 'Field/Desk Mix', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false, hasCadreBreakdown: true },
+      { id: 'aso_css', postCode: 'B16', name: 'ASO', department: 'DoPT (CSS)', vacancies: { UR: 398, SC: 147, ST: 74, OBC: 265, EWS: 98, Total: 982 }, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'CPT', ageLimit: '20-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'aso_afhq', postCode: 'B17', name: 'ASO', department: 'AFHQ (Defence)', vacancies: { UR: 81, SC: 22, ST: 9, OBC: 27, EWS: 15, Total: 154 }, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'CPT', ageLimit: '20-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'asst_tourism', postCode: 'B18', name: 'Assistant', department: 'Ministry of Tourism', vacancies: { UR: 3, SC: 0, ST: 0, OBC: 0, EWS: 0, Total: 3 }, payLevel: 7, jobType: 'Desk', posting: 'Delhi', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: false },
+      { id: 'ip', postCode: 'B19', name: 'Inspector of Posts', department: 'Department of Posts', vacancies: { UR: 17, SC: 6, ST: 3, OBC: 10, EWS: 4, Total: 40 }, payLevel: 7, jobType: 'Field', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'ea', postCode: 'B20', name: 'Executive Assistant', department: 'CBIC', vacancies: { UR: 89, SC: 24, ST: 12, OBC: 40, EWS: 18, Total: 183 }, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'CPT', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false, hasCadreBreakdown: true },
+      { id: 'asst_ed', postCode: 'B21', name: 'Assistant', department: 'Enforcement Directorate', vacancies: { UR: 0, SC: 0, ST: 0, OBC: 3, EWS: 0, Total: 3 }, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'asst_trai', postCode: 'B22', name: 'Assistant', department: 'TRAI', vacancies: { UR: 9, SC: 2, ST: 0, OBC: 0, EWS: 0, Total: 11 }, payLevel: 6, jobType: 'Desk', posting: 'Delhi', cpt: 'CPT', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: false },
+      { id: 'asst_ol', postCode: 'B23', name: 'Assistant', department: 'Dept of Official Language', vacancies: { UR: 4, SC: 0, ST: 0, OBC: 1, EWS: 0, Total: 5 }, payLevel: 6, jobType: 'Desk', posting: 'Delhi', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'asst_mca', postCode: 'B24', name: 'Assistant', department: 'Ministry of Corporate Affairs', vacancies: { UR: 0, SC: 1, ST: 0, OBC: 0, EWS: 0, Total: 1 }, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'CPT', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'asst_mines', postCode: 'B25', name: 'Assistant', department: 'Ministry of Mines', vacancies: { UR: 11, SC: 2, ST: 2, OBC: 3, EWS: 4, Total: 22 }, payLevel: 6, jobType: 'Desk', posting: 'Delhi', cpt: 'CPT', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'asst_textiles', postCode: 'B26', name: 'Assistant', department: 'Ministry of Textiles', vacancies: { UR: 1, SC: 0, ST: 0, OBC: 0, EWS: 0, Total: 1 }, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'asst_icg', postCode: 'B27', name: 'Assistant', department: 'Indian Coast Guard', vacancies: { UR: 8, SC: 3, ST: 1, OBC: 5, EWS: 1, Total: 18 }, payLevel: 6, jobType: 'Desk', posting: 'Coastal/Delhi', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: false },
+      { id: 'asst_dfss', postCode: 'B28', name: 'Assistant', department: 'DFSS (MHA)', vacancies: { UR: 1, SC: 0, ST: 0, OBC: 1, EWS: 1, Total: 3 }, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: false },
+      { id: 'asst_ncb', postCode: 'B29', name: 'ASO', department: 'NCB', vacancies: { UR: 9, SC: 1, ST: 1, OBC: 2, EWS: 0, Total: 13 }, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'si_ncb', postCode: 'B30', name: 'Sub-Inspector / JIO', department: 'NCB', vacancies: { UR: 18, SC: 6, ST: 7, OBC: 9, EWS: 7, Total: 47 }, payLevel: 6, jobType: 'Field/Uniform', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: true },
+      { id: 'si_nia', postCode: 'B31', name: 'Sub Inspector', department: 'NIA', vacancies: { UR: 6, SC: 2, ST: 1, OBC: 3, EWS: 2, Total: 14 }, payLevel: 6, jobType: 'Field/Uniform', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: true },
+      { id: 'asst_mospi', postCode: 'B32', name: 'Assistant', department: 'MoSPI', vacancies: { UR: 0, SC: 0, ST: 0, OBC: 2, EWS: 0, Total: 2 }, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'os', postCode: 'B33', name: 'Office Superintendent', department: 'CBDT', vacancies: { UR: 2709, SC: 983, ST: 498, OBC: 1791, EWS: 645, Total: 6626 }, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false, hasCadreBreakdown: true },
+      { id: 'sec_head', postCode: 'B34', name: 'Section Head', department: 'DGFT', vacancies: { UR: 22, SC: 10, ST: 5, OBC: 15, EWS: 5, Total: 57 }, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'CPT', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'asst_commerce', postCode: 'B35', name: 'Assistant', department: 'Department of Commerce', vacancies: { UR: 2, SC: 0, ST: 0, OBC: 0, EWS: 0, Total: 2 }, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'CPT', ageLimit: '18-30', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'stat_inv', postCode: 'C36', name: 'Statistical Investigator Grade-II', department: 'RGI', vacancies: { UR: 50, SC: 18, ST: 12, OBC: 28, EWS: 10, Total: 118 }, payLevel: 6, jobType: 'Field/Desk Mix', posting: 'All India', cpt: 'NA', ageLimit: '18-30', colorBlindSuitable: 'NO', hasPhysical: false },
+      { id: 'jso', postCode: 'C37', name: 'Junior Statistical Officer', department: 'MoSPI', vacancies: { UR: 124, SC: 47, ST: 15, OBC: 36, EWS: 27, Total: 249 }, payLevel: 6, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-32', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'acct_cag', postCode: 'D38', name: 'Accountant / Jr Accountant', department: 'CAG', vacancies: { UR: 86, SC: 31, ST: 17, OBC: 28, EWS: 18, Total: 180 }, payLevel: 5, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'auditor_cgda', postCode: 'D39', name: 'Auditor', department: 'CGDA', vacancies: { UR: 477, SC: 176, ST: 88, OBC: 316, EWS: 117, Total: 1174 }, payLevel: 5, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'acct_postal', postCode: 'D40', name: 'Accountant', department: 'Postal', vacancies: { UR: 42, SC: 13, ST: 6, OBC: 12, EWS: 3, Total: 76 }, payLevel: 5, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'acct_cgca', postCode: 'D41', name: 'Accountant', department: 'CGCA', vacancies: { UR: 15, SC: 6, ST: 3, OBC: 9, EWS: 3, Total: 36 }, payLevel: 5, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'NO', hasPhysical: false },
+      { id: 'udc_msme', postCode: 'D42', name: 'UDC / SSA', department: 'MSME', vacancies: { UR: 25, SC: 4, ST: 5, OBC: 16, EWS: 5, Total: 55 }, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'ta_cbic', postCode: 'D43', name: 'Tax Assistant', department: 'CBIC', vacancies: { UR: 256, SC: 136, ST: 82, OBC: 203, EWS: 94, Total: 771 }, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'DEST', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false, hasCadreBreakdown: true },
+      { id: 'udc_dst', postCode: 'D44', name: 'UDC / SSA', department: 'Science & Technology', vacancies: { UR: 24, SC: 9, ST: 4, OBC: 16, EWS: 6, Total: 59 }, payLevel: 4, jobType: 'Desk', posting: 'Delhi', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'udc_cbn', postCode: 'D45', name: 'UDC / SSA', department: 'Central Bureau of Narcotics', vacancies: { UR: 12, SC: 2, ST: 0, OBC: 5, EWS: 2, Total: 21 }, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'DEST', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'si_cbn', postCode: 'D46', name: 'Sub-Inspector', department: 'Central Bureau of Narcotics', vacancies: { UR: 11, SC: 2, ST: 0, OBC: 6, EWS: 0, Total: 19 }, payLevel: 4, jobType: 'Field/Uniform', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'NO', hasPhysical: true },
+      { id: 'udc_mines', postCode: 'D47', name: 'UDC / SSA', department: 'Ministry of Mines', vacancies: { UR: 13, SC: 2, ST: 3, OBC: 4, EWS: 4, Total: 26 }, payLevel: 4, jobType: 'Desk', posting: 'Delhi', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'udc_dgde', postCode: 'D48', name: 'UDC / SSA', department: 'DGDE', vacancies: { UR: 7, SC: 2, ST: 1, OBC: 3, EWS: 1, Total: 14 }, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'udc_meity', postCode: 'D49', name: 'UDC / SSA', department: 'MeitY', vacancies: { UR: 5, SC: 1, ST: 1, OBC: 2, EWS: 1, Total: 10 }, payLevel: 4, jobType: 'Desk', posting: 'Delhi', cpt: 'DEST', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'udc_textiles', postCode: 'D50', name: 'UDC / SSA', department: 'Ministry of Textiles', vacancies: { UR: 4, SC: 0, ST: 1, OBC: 1, EWS: 2, Total: 8 }, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'udc_water', postCode: 'D51', name: 'UDC / SSA', department: 'Water Resources', vacancies: { UR: 5, SC: 0, ST: 0, OBC: 0, EWS: 0, Total: 5 }, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'udc_bro', postCode: 'D52', name: 'UDC / SSA', department: 'BRO (Male)', vacancies: { UR: 20, SC: 1, ST: 0, OBC: 0, EWS: 4, Total: 25 }, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'NO', hasPhysical: true },
+      { id: 'udc_agri', postCode: 'D53', name: 'UDC / SSA', department: 'Agriculture', vacancies: { UR: 2, SC: 0, ST: 0, OBC: 0, EWS: 1, Total: 3 }, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'udc_health', postCode: 'D54', name: 'UDC / SSA', department: 'Health Services', vacancies: { UR: 1, SC: 0, ST: 0, OBC: 0, EWS: 0, Total: 1 }, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'CPT', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'ta_cbdt', postCode: 'D55', name: 'Tax Assistant', department: 'CBDT', vacancies: { UR: 617, SC: 162, ST: 78, OBC: 347, EWS: 90, Total: 1294 }, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'DEST', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false, hasCadreBreakdown: true },
+      { id: 'udc_consumer', postCode: 'D56', name: 'UDC', department: 'Consumer Affairs', vacancies: { UR: 5, SC: 1, ST: 0, OBC: 0, EWS: 0, Total: 6 }, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'udc_ncb', postCode: 'D57', name: 'UDC', department: 'NCB', vacancies: { UR: 0, SC: 1, ST: 0, OBC: 0, EWS: 0, Total: 1 }, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
+      { id: 'udc_jal', postCode: 'D58', name: 'UDC', department: 'Jal Shakti', vacancies: { UR: 5, SC: 0, ST: 0, OBC: 0, EWS: 0, Total: 5 }, payLevel: 4, jobType: 'Desk', posting: 'All India', cpt: 'NA', ageLimit: '18-27', colorBlindSuitable: 'YES', hasPhysical: false },
     ];
 
+    // --- FULL CATEGORY-WISE ZONE MAPPING ---
     const cadreDataMap = {
-      'gst_inspector': { 'Delhi': 1, 'Chandigarh': 2, 'Ahmedabad': 1, 'Jaipur': 0, 'Bhopal': 6, 'Lucknow': 4, 'Vadodara': 7, 'Mumbai': 0, 'Bangalore': 8, 'Bhubaneswar': 3, 'Chennai': 5, 'Patna': 0, 'Goa': 0, 'Guwahati': 7, 'Hyderabad': 12, 'Kolkata': 10, 'Ranchi': 8, 'Trivandrum': 9, 'Kochi': 0, 'Visakhapatnam': 0, 'Kanpur': 0, 'Nagpur': 0, 'Pune': 0 },
-      'examiner': { 'Delhi': 0, 'Chandigarh': 0, 'Ahmedabad': 0, 'Jaipur': 0, 'Bhopal': 0, 'Lucknow': 0, 'Vadodara': 0, 'Mumbai': 8, 'Bangalore': 0, 'Bhubaneswar': 0, 'Chennai': 8, 'Patna': 0, 'Goa': 3, 'Guwahati': 0, 'Hyderabad': 0, 'Kolkata': 2, 'Ranchi': 0, 'Trivandrum': 2, 'Kochi': 0, 'Visakhapatnam': 1, 'Kanpur': 0, 'Nagpur': 0, 'Pune': 0 },
-      'po': { 'Delhi': 0, 'Chandigarh': 0, 'Ahmedabad': 0, 'Jaipur': 0, 'Bhopal': 0, 'Lucknow': 0, 'Vadodara': 0, 'Mumbai': 4, 'Bangalore': 0, 'Bhubaneswar': 0, 'Chennai': 12, 'Patna': 0, 'Goa': 0, 'Guwahati': 0, 'Hyderabad': 0, 'Kolkata': 1, 'Ranchi': 0, 'Trivandrum': 3, 'Kochi': 0, 'Visakhapatnam': 0, 'Kanpur': 0, 'Nagpur': 0, 'Pune': 0 },
-      'iti': { 'Delhi': 3, 'Chandigarh': 3, 'Ahmedabad': 2, 'Jaipur': 2, 'Bhopal': 0, 'Lucknow': 0, 'Vadodara': 0, 'Mumbai': 8, 'Bangalore': 4, 'Bhubaneswar': 1, 'Chennai': 2, 'Patna': 3, 'Goa': 0, 'Guwahati': 1, 'Hyderabad': 2, 'Kolkata': 4, 'Ranchi': 0, 'Trivandrum': 0, 'Kochi': 1, 'Visakhapatnam': 0, 'Kanpur': 3, 'Nagpur': 0, 'Pune': 0 },
-      'ea': { 'Delhi': 0, 'Chandigarh': 0, 'Ahmedabad': 0, 'Jaipur': 0, 'Bhopal': 0, 'Lucknow': 0, 'Vadodara': 4, 'Mumbai': 2, 'Bangalore': 0, 'Bhubaneswar': 0, 'Chennai': 2, 'Patna': 0, 'Goa': 0, 'Guwahati': 0, 'Hyderabad': 0, 'Kolkata': 2, 'Ranchi': 2, 'Trivandrum': 0, 'Kochi': 0, 'Visakhapatnam': 0, 'Kanpur': 0, 'Nagpur': 0, 'Pune': 0 },
-      'ta_cbic': { 'Delhi': 1, 'Chandigarh': 6, 'Ahmedabad': 3, 'Jaipur': 4, 'Bhopal': 5, 'Lucknow': 1, 'Vadodara': 7, 'Mumbai': 11, 'Bangalore': 2, 'Bhubaneswar': 3, 'Chennai': 2, 'Patna': 0, 'Goa': 0, 'Guwahati': 0, 'Hyderabad': 1, 'Kolkata': 4, 'Ranchi': 0, 'Trivandrum': 2, 'Kochi': 0, 'Visakhapatnam': 0, 'Kanpur': 0, 'Nagpur': 0, 'Pune': 0 },
-      'ta_cbdt': { 'Delhi': 19, 'Chandigarh': 6, 'Ahmedabad': 12, 'Jaipur': 0, 'Bhopal': 6, 'Lucknow': 2, 'Vadodara': 0, 'Mumbai': 13, 'Bangalore': 9, 'Bhubaneswar': 2, 'Chennai': 2, 'Patna': 2, 'Goa': 0, 'Guwahati': 0, 'Hyderabad': 0, 'Kolkata': 0, 'Ranchi': 0, 'Trivandrum': 0, 'Kochi': 0, 'Visakhapatnam': 0, 'Kanpur': 2, 'Nagpur': 0, 'Pune': 2 },
-      'os': { 'Delhi': 64, 'Chandigarh': 47, 'Ahmedabad': 52, 'Jaipur': 10, 'Bhopal': 25, 'Lucknow': 14, 'Vadodara': 0, 'Mumbai': 126, 'Bangalore': 49, 'Bhubaneswar': 9, 'Chennai': 35, 'Patna': 8, 'Goa': 0, 'Guwahati': 0, 'Hyderabad': 18, 'Kolkata': 16, 'Ranchi': 0, 'Trivandrum': 0, 'Kochi': 11, 'Visakhapatnam': 0, 'Kanpur': 12, 'Nagpur': 0, 'Pune': 0 },
+      'gst_inspector': {
+        'Delhi': { UR: 19, EWS: 8, OBC: 5, SC: 3, ST: 1, Total: 36 },
+        'Chandigarh': { UR: 25, EWS: 12, OBC: 5, SC: 4, ST: 2, Total: 48 },
+        'Jaipur': { UR: 30, EWS: 2, OBC: 4, SC: 4, ST: 0, Total: 40 },
+        'Bhopal': { UR: 58, EWS: 14, OBC: 9, SC: 7, ST: 6, Total: 94 },
+        'Lucknow': { UR: 33, EWS: 14, OBC: 8, SC: 4, ST: 4, Total: 63 },
+        'Vadodara': { UR: 130, EWS: 72, OBC: 13, SC: 11, ST: 7, Total: 233 },
+        'Mumbai': { UR: 349, EWS: 222, OBC: 104, SC: 23, ST: 0, Total: 698 },
+        'Bangalore': { UR: 124, EWS: 54, OBC: 35, SC: 16, ST: 8, Total: 237 },
+        'Bhubaneswar': { UR: 27, EWS: 9, OBC: 5, SC: 6, ST: 3, Total: 50 },
+        'Chennai': { UR: 87, EWS: 28, OBC: 14, SC: 15, ST: 5, Total: 149 },
+        'Goa': { UR: 0, EWS: 0, OBC: 0, SC: 0, ST: 0, Total: 0 },
+        'Guwahati': { UR: 105, EWS: 53, OBC: 21, SC: 16, ST: 7, Total: 202 },
+        'Hyderabad': { UR: 138, EWS: 75, OBC: 6, SC: 31, ST: 12, Total: 262 },
+        'Kolkata': { UR: 83, EWS: 0, OBC: 10, SC: 17, ST: 10, Total: 120 },
+        'Ranchi': { UR: 42, EWS: 24, OBC: 5, SC: 2, ST: 8, Total: 81 },
+        'Thiruvananthapuram': { UR: 56, EWS: 24, OBC: 5, SC: 16, ST: 9, Total: 110 }
+      },
+      'examiner': {
+        'Mumbai': { UR: 36, OBC: 10, EWS: 8, SC: 8, ST: 8, Total: 70 },
+        'Chennai': { UR: 11, OBC: 0, EWS: 5, SC: 8, ST: 8, Total: 32 },
+        'Kolkata': { UR: 7, OBC: 1, EWS: 0, SC: 0, ST: 2, Total: 10 },
+        'Thiruvananthapuram': { UR: 6, OBC: 1, EWS: 1, SC: 0, ST: 2, Total: 10 },
+        'Visakhapatnam': { UR: 3, OBC: 0, EWS: 0, SC: 1, ST: 1, Total: 5 },
+        'Goa': { UR: 5, OBC: 1, EWS: 0, SC: 1, ST: 3, Total: 10 }
+      },
+      'po': {
+        'Mumbai': { UR: 95, OBC: 66, EWS: 17, SC: 57, ST: 4, Total: 239 },
+        'Chennai': { UR: 25, OBC: 21, EWS: 9, SC: 16, ST: 12, Total: 83 },
+        'Kolkata': { UR: 5, OBC: 2, EWS: 1, SC: 1, ST: 1, Total: 10 },
+        'Thiruvananthapuram': { UR: 7, OBC: 0, EWS: 2, SC: 1, ST: 3, Total: 13 },
+        'Goa': { UR: 5, OBC: 0, EWS: 0, SC: 0, ST: 0, Total: 5 },
+        'Visakhapatnam': { UR: 1, OBC: 2, EWS: 0, SC: 0, ST: 0, Total: 3 }
+      },
+      'iti': {
+        'Ahmedabad': { UR: 10, OBC: 6, EWS: 2, SC: 3, ST: 2, Total: 23 },
+        'Bangalore': { UR: 23, OBC: 15, EWS: 6, SC: 9, ST: 4, Total: 57 },
+        'Bhopal': { UR: 5, OBC: 2, EWS: 1, SC: 4, ST: 0, Total: 12 },
+        'Bhubaneswar': { UR: 5, OBC: 0, EWS: 1, SC: 2, ST: 1, Total: 9 },
+        'Chandigarh': { UR: 9, OBC: 6, EWS: 2, SC: 2, ST: 3, Total: 22 },
+        'Chennai': { UR: 15, OBC: 9, EWS: 3, SC: 5, ST: 2, Total: 34 },
+        'Delhi': { UR: 20, OBC: 5, EWS: 0, SC: 5, ST: 3, Total: 33 },
+        'Guwahati': { UR: 2, OBC: 2, EWS: 0, SC: 1, ST: 1, Total: 6 },
+        'Hyderabad': { UR: 19, OBC: 3, EWS: 2, SC: 4, ST: 2, Total: 30 },
+        'Jaipur': { UR: 4, OBC: 6, EWS: 1, SC: 0, ST: 2, Total: 13 },
+        'Kanpur': { UR: 3, OBC: 10, EWS: 1, SC: 2, ST: 3, Total: 19 },
+        'Kochi': { UR: 5, OBC: 2, EWS: 1, SC: 1, ST: 1, Total: 10 },
+        'Kolkata': { UR: 28, OBC: 15, EWS: 1, SC: 8, ST: 4, Total: 56 },
+        'Lucknow': { UR: 1, OBC: 0, EWS: 1, SC: 0, ST: 0, Total: 2 },
+        'Mumbai': { UR: 17, OBC: 13, EWS: 4, SC: 3, ST: 8, Total: 45 },
+        'Patna': { UR: 10, OBC: 1, EWS: 1, SC: 3, ST: 3, Total: 18 }
+      },
+      'ea': {
+        'Bengaluru': { UR: 6, SC: 2, ST: 0, OBC: 1, EWS: 0, Total: 9 },
+        'Bhopal': { UR: 0, SC: 0, ST: 0, OBC: 0, EWS: 1, Total: 1 },
+        'Bhubaneswar': { UR: 1, SC: 0, ST: 0, OBC: 0, EWS: 0, Total: 1 },
+        'Chennai': { UR: 14, SC: 6, ST: 1, OBC: 2, EWS: 5, Total: 28 },
+        'Delhi': { UR: 3, SC: 0, ST: 0, OBC: 1, EWS: 0, Total: 4 },
+        'Goa': { UR: 3, SC: 0, ST: 0, OBC: 1, EWS: 0, Total: 4 },
+        'Guwahati': { UR: 2, SC: 0, ST: 4, OBC: 0, EWS: 1, Total: 7 },
+        'Hyderabad': { UR: 5, SC: 2, ST: 0, OBC: 4, EWS: 0, Total: 11 },
+        'Jaipur': { UR: 1, SC: 0, ST: 0, OBC: 0, EWS: 0, Total: 1 },
+        'Kolkata': { UR: 15, SC: 2, ST: 2, OBC: 10, EWS: 4, Total: 33 },
+        'Lucknow': { UR: 1, SC: 0, ST: 1, OBC: 0, EWS: 0, Total: 2 },
+        'Mumbai': { UR: 21, SC: 7, ST: 2, OBC: 11, EWS: 1, Total: 42 },
+        'Pune': { UR: 0, SC: 0, ST: 0, OBC: 1, EWS: 1, Total: 2 },
+        'Ranchi': { UR: 5, SC: 1, ST: 2, OBC: 4, EWS: 1, Total: 13 },
+        'Thiruvananthapuram': { UR: 5, SC: 1, ST: 0, OBC: 2, EWS: 0, Total: 8 },
+        'Vadodara': { UR: 6, SC: 3, ST: 0, OBC: 3, EWS: 4, Total: 16 },
+        'Visakhapatnam': { UR: 1, SC: 0, ST: 0, OBC: 0, EWS: 0, Total: 1 }
+      },
+      'ta_cbdt': {
+        'Ahmedabad': { UR: 65, OBC: 43, EWS: 16, SC: 24, ST: 12, Total: 160 },
+        'Bangalore': { UR: 11, OBC: 19, EWS: 4, SC: 3, ST: 6, Total: 43 },
+        'Bhopal': { UR: 33, OBC: 26, EWS: 9, SC: 7, ST: 6, Total: 81 },
+        'Bhubaneswar': { UR: 4, OBC: 8, EWS: 2, SC: 3, ST: 2, Total: 19 },
+        'Chandigarh': { UR: 69, OBC: 42, EWS: 12, SC: 29, ST: 14, Total: 166 },
+        'Chennai': { UR: 18, OBC: 10, EWS: 3, SC: 5, ST: 2, Total: 38 },
+        'Delhi': { UR: 73, OBC: 133, EWS: 3, SC: 25, ST: 19, Total: 253 },
+        'Guwahati': { UR: 14, OBC: 3, EWS: 1, SC: 0, ST: 1, Total: 19 },
+        'Hyderabad': { UR: 14, OBC: 14, EWS: 2, SC: 1, ST: 11, Total: 42 },
+        'Jaipur': { UR: 13, OBC: 25, EWS: 4, SC: 4, ST: 13, Total: 59 },
+        'Kanpur': { UR: 26, OBC: 7, EWS: 5, SC: 2, ST: 6, Total: 46 },
+        'Kochi': { UR: 13, OBC: 2, EWS: 1, SC: 1, ST: 2, Total: 19 },
+        'Kolkata': { UR: 28, OBC: 19, EWS: 1, SC: 8, ST: 3, Total: 59 },
+        'Lucknow': { UR: 7, OBC: 18, EWS: 3, SC: 0, ST: 3, Total: 31 },
+        'Mumbai': { UR: 59, OBC: 27, EWS: 14, SC: 30, ST: 13, Total: 143 },
+        'Nagpur': { UR: 36, OBC: 11, EWS: 3, SC: 9, ST: 0, Total: 59 },
+        'Patna': { UR: 10, OBC: 16, EWS: 0, SC: 2, ST: 2, Total: 30 },
+        'Pune': { UR: 36, OBC: 13, EWS: 7, SC: 9, ST: 2, Total: 67 }
+      },
+      'ta_cbic': {
+        'Delhi': { UR: 23, OBC: 11, EWS: 6, SC: 2, ST: 3, Total: 45 },
+        'Chandigarh': { UR: 21, OBC: 12, EWS: 2, SC: 3, ST: 6, Total: 44 },
+        'Jaipur': { UR: 3, OBC: 11, EWS: 4, SC: 6, ST: 4, Total: 28 },
+        'Bhopal': { UR: 13, OBC: 15, EWS: 8, SC: 5, ST: 4, Total: 45 },
+        'Lucknow': { UR: 2, OBC: 0, EWS: 0, SC: 1, ST: 1, Total: 4 },
+        'Vadodara': { UR: 39, OBC: 12, EWS: 14, SC: 56, ST: 27, Total: 148 },
+        'DGPM': { UR: 0, OBC: 21, EWS: 3, SC: 5, ST: 5, Total: 34 },
+        'Mumbai': { UR: 5, OBC: 16, EWS: 19, SC: 14, ST: 11, Total: 65 },
+        'Bangalore': { UR: 8, OBC: 3, EWS: 0, SC: 10, ST: 2, Total: 23 },
+        'Bhubaneswar': { UR: 0, OBC: 1, EWS: 4, SC: 3, ST: 0, Total: 8 },
+        'Chennai': { UR: 20, OBC: 20, EWS: 10, SC: 20, ST: 9, Total: 79 },
+        'Goa': { UR: 1, OBC: 1, EWS: 2, SC: 0, ST: 0, Total: 4 },
+        'Guwahati': { UR: 7, OBC: 5, EWS: 0, SC: 1, ST: 0, Total: 13 },
+        'Hyderabad': { UR: 35, OBC: 28, EWS: 12, SC: 13, ST: 5, Total: 93 },
+        'Kolkata': { UR: 66, OBC: 30, EWS: 29, SC: 25, ST: 4, Total: 154 },
+        'Ranchi': { UR: 2, OBC: 2, EWS: 4, SC: 0, ST: 0, Total: 8 },
+        'Pune': { UR: 9, OBC: 4, EWS: 4, SC: 1, ST: 0, Total: 18 },
+        'Visakhapatnam': { UR: 2, OBC: 1, EWS: 0, SC: 1, ST: 0, Total: 4 },
+        'Thiruvananthapuram': { UR: 20, OBC: 10, EWS: 5, SC: 14, ST: 2, Total: 51 }
+      },
+      'os': {
+        'Ahmedabad': { UR: 279, OBC: 187, EWS: 69, SC: 104, ST: 52, Total: 691 },
+        'Bangalore': { UR: 263, OBC: 176, EWS: 65, SC: 98, ST: 49, Total: 651 },
+        'Bhopal': { UR: 134, OBC: 90, EWS: 33, SC: 50, ST: 25, Total: 332 },
+        'Bhubaneswar': { UR: 55, OBC: 31, EWS: 13, SC: 18, ST: 9, Total: 126 },
+        'Chandigarh': { UR: 259, OBC: 166, EWS: 62, SC: 94, ST: 47, Total: 628 },
+        'Chennai': { UR: 196, OBC: 128, EWS: 47, SC: 71, ST: 35, Total: 477 },
+        'Delhi': { UR: 354, OBC: 233, EWS: 86, SC: 129, ST: 64, Total: 866 },
+        'Guwahati': { UR: 80, OBC: 59, EWS: 24, SC: 31, ST: 0, Total: 194 },
+        'Hyderabad': { UR: 118, OBC: 68, EWS: 11, SC: 37, ST: 18, Total: 252 },
+        'Jaipur': { UR: 62, OBC: 37, EWS: 7, SC: 20, ST: 10, Total: 136 },
+        'Kanpur': { UR: 71, OBC: 48, EWS: 18, SC: 27, ST: 12, Total: 176 },
+        'Kochi': { UR: 62, OBC: 40, EWS: 14, SC: 22, ST: 11, Total: 149 },
+        'Kolkata': { UR: 87, OBC: 58, EWS: 21, SC: 32, ST: 16, Total: 214 },
+        'Lucknow': { UR: 73, OBC: 49, EWS: 18, SC: 27, ST: 14, Total: 181 },
+        'Mumbai': { UR: 627, OBC: 423, EWS: 158, SC: 236, ST: 126, Total: 1570 },
+        'Patna': { UR: 46, OBC: 29, EWS: 11, SC: 16, ST: 8, Total: 110 }
+      }
     };
 
     const northToSouthOrder = {
       'Chandigarh': 1, 'Delhi': 2, 'Jaipur': 3, 'Lucknow': 4, 'Kanpur': 5, 'Guwahati': 6,
       'Patna': 7, 'Bhopal': 8, 'Ahmedabad': 9, 'Ranchi': 10, 'Kolkata': 11, 'Vadodara': 12,
       'Nagpur': 13, 'Bhubaneswar': 14, 'Mumbai': 15, 'Pune': 16, 'Visakhapatnam': 17,
-      'Hyderabad': 18, 'Goa': 19, 'Bangalore': 20, 'Chennai': 21, 'Kochi': 22, 'Trivandrum': 23
+      'Hyderabad': 18, 'Goa': 19, 'Bangalore': 20, 'Chennai': 21, 'Kochi': 22, 'Trivandrum': 23, 'DGPM': 99
     };
 
     // --- UI HELPERS ---
     const getDeptIcon = (dept) => {
       const lowerDept = dept.toLowerCase();
       if (lowerDept.includes('railways')) return 'fa-train';
-      if (lowerDept.includes('cbi') || lowerDept.includes('nia') || lowerDept.includes('ncb') || lowerDept.includes('ib')) return 'fa-user-secret';
+      if (lowerDept.includes('cbi') || lowerDept.includes('nia') || lowerDept.includes('ncb') || lowerDept.includes('narcotics') || lowerDept.includes('ib')) return 'fa-user-secret';
       if (lowerDept.includes('cbic') || lowerDept.includes('cbdt') || lowerDept.includes('gst') || lowerDept.includes('income tax')) return 'fa-file-invoice-dollar';
       if (lowerDept.includes('external affairs')) return 'fa-globe';
-      if (lowerDept.includes('postal')) return 'fa-envelopes-bulk';
-      if (lowerDept.includes('defence') || lowerDept.includes('afhq') || lowerDept.includes('coast guard')) return 'fa-jet-fighter';
-      if (lowerDept.includes('statistical') || lowerDept.includes('mospi')) return 'fa-chart-pie';
+      if (lowerDept.includes('postal') || lowerDept.includes('posts')) return 'fa-envelopes-bulk';
+      if (lowerDept.includes('defence') || lowerDept.includes('afhq') || lowerDept.includes('coast guard') || lowerDept.includes('dgde') || lowerDept.includes('bro')) return 'fa-jet-fighter';
+      if (lowerDept.includes('statistical') || lowerDept.includes('mospi') || lowerDept.includes('rgi')) return 'fa-chart-pie';
       if (lowerDept.includes('mines')) return 'fa-helmet-safety';
       if (lowerDept.includes('textiles')) return 'fa-shirt';
       if (lowerDept.includes('election')) return 'fa-check-to-slot';
-      if (lowerDept.includes('cag') || lowerDept.includes('cgda')) return 'fa-calculator';
+      if (lowerDept.includes('cag') || lowerDept.includes('cgda') || lowerDept.includes('cgca')) return 'fa-calculator';
       if (lowerDept.includes('ed') || lowerDept.includes('enforcement')) return 'fa-building-shield';
+      if (lowerDept.includes('agriculture')) return 'fa-seedling';
+      if (lowerDept.includes('health')) return 'fa-staff-snake';
+      if (lowerDept.includes('water') || lowerDept.includes('jal')) return 'fa-water';
       return 'fa-building-columns';
     };
 
@@ -224,6 +369,7 @@
     function App() {
       const [activeTab, setActiveTab] = useState('browse');
       
+      const [selectedCategory, setSelectedCategory] = useState('Total'); // New Category State
       const [jobTypeFilter, setJobTypeFilter] = useState('All');
       const [payLevelFilter, setPayLevelFilter] = useState('All');
       const [locationFilter, setLocationFilter] = useState('All');
@@ -237,6 +383,11 @@
         return savedPrefs ? JSON.parse(savedPrefs) : [];
       });
 
+      // Submit Form State
+      const [userName, setUserName] = useState('');
+      const [isSubmitting, setIsSubmitting] = useState(false);
+      const [submitMessage, setSubmitMessage] = useState('');
+
       useEffect(() => {
         localStorage.setItem('ssc_cgl_prefs_st', JSON.stringify(preferences));
       }, [preferences]);
@@ -249,7 +400,7 @@
 
       const filteredPosts = useMemo(() => {
         return postsData.filter(post => {
-          if (hideZeroVacancies && post.vacancies === 0) return false;
+          if (hideZeroVacancies && post.vacancies[selectedCategory] === 0) return false;
           if (jobTypeFilter !== 'All' && !post.jobType.includes(jobTypeFilter)) return false;
           if (payLevelFilter !== 'All' && post.payLevel.toString() !== payLevelFilter) return false;
           if (cptFilter !== 'All' && post.cpt !== cptFilter) return false;
@@ -261,7 +412,7 @@
           }
           return true;
         });
-      }, [jobTypeFilter, payLevelFilter, locationFilter, cptFilter, ageFilter, colorBlindFilter, hideZeroVacancies]);
+      }, [jobTypeFilter, payLevelFilter, locationFilter, cptFilter, ageFilter, colorBlindFilter, hideZeroVacancies, selectedCategory]);
 
       const addToPreferences = (post) => {
         if (!preferences.find(p => p.id === post.id)) {
@@ -313,9 +464,56 @@
         document.body.removeChild(textArea);
       };
 
+      const handleSubmission = async (e) => {
+        e.preventDefault();
+        
+        if (preferences.length === 0) {
+          alert("Your preference list is empty! Please add posts first.");
+          return;
+        }
+
+        setIsSubmitting(true);
+        setSubmitMessage('');
+
+        const formattedList = preferences.map((p, i) => `${i + 1}. [${p.postCode}] ${p.name}`).join('\n');
+        const payload = {
+          name: userName,
+          category: selectedCategory,
+          total_preferences: preferences.length,
+          preferences_list: formattedList
+        };
+
+        try {
+          const endpoint = "https://formspree.io/f/xreybagp";
+
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (response.ok) {
+            setSubmitMessage("Success! Your preferences have been submitted.");
+            setUserName('');
+          } else {
+            setSubmitMessage("Oops! Something went wrong. Try again.");
+          }
+          
+          setIsSubmitting(false);
+
+        } catch (error) {
+          console.error("Submission error:", error);
+          setSubmitMessage("Network error. Please check your connection.");
+          setIsSubmitting(false);
+        }
+      };
+
       const getSortedCadres = (postId) => {
         if (!cadreDataMap[postId]) return [];
-        let cadres = Object.entries(cadreDataMap[postId]).map(([name, count]) => ({ name, count }));
+        let cadres = Object.entries(cadreDataMap[postId]).map(([name, vacObj]) => ({ name, count: vacObj[selectedCategory] || 0 }));
         cadres = cadres.filter(c => c.count > 0);
         if (cadreSortType === 'vacancies') {
           cadres.sort((a, b) => b.count - a.count);
@@ -342,7 +540,7 @@
                     SSC CGL Preference Builder
                   </h1>
                   <p className="text-blue-200 text-xs mt-0.5 font-medium flex items-center gap-1.5">
-                    ST Category Vacancies 
+                    {selectedCategory === 'Total' ? 'All Categories' : `${selectedCategory} Category`} Vacancies 
                     <span className="bg-white/10 px-2 py-0.5 rounded-full border border-white/10 tracking-wide text-[10px] uppercase shadow-apple-inset">By Abhishek Jorwal</span>
                   </p>
                 </div>
@@ -388,6 +586,22 @@
                     </div>
                     
                     <div className="space-y-5">
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-800 uppercase tracking-wider mb-1.5">Candidate Category</label>
+                        <select 
+                          value={selectedCategory} 
+                          onChange={(e) => setSelectedCategory(e.target.value)}
+                          className="w-full rounded-xl border border-blue-300/60 py-2.5 px-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/60 backdrop-blur-md outline-none transition-all cursor-pointer font-bold text-blue-900 shadow-apple-glass"
+                        >
+                          <option value="Total">Total Vacancies (All)</option>
+                          <option value="UR">UR (Unreserved)</option>
+                          <option value="OBC">OBC</option>
+                          <option value="SC">SC</option>
+                          <option value="ST">ST</option>
+                          <option value="EWS">EWS</option>
+                        </select>
+                      </div>
+
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Age Limit</label>
@@ -481,15 +695,15 @@
                           className="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
                         />
                         <label htmlFor="hideZero" className="ml-3 block text-sm font-medium text-slate-700 cursor-pointer select-none">
-                          Hide 0 ST vacancy posts
+                          Hide 0 {selectedCategory} vacancy posts
                         </label>
                       </div>
                     </div>
 
                     <div className="mt-8 pt-6 border-t border-white/40">
                       <div className="bg-white/40 backdrop-blur-lg rounded-xl p-4 border border-white/60 shadow-apple-inset">
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1">ST Vacancies Found</p>
-                        <p className="text-3xl font-semibold text-blue-600 drop-shadow-sm">{filteredPosts.reduce((acc, curr) => acc + curr.vacancies, 0)}</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1">{selectedCategory} Vacancies Found</p>
+                        <p className="text-3xl font-semibold text-blue-600 drop-shadow-sm">{filteredPosts.reduce((acc, curr) => acc + curr.vacancies[selectedCategory], 0)}</p>
                       </div>
                     </div>
                   </div>
@@ -535,7 +749,7 @@
                               
                               <div className="flex-shrink-0 flex flex-col items-end">
                                 <span className="inline-flex items-center bg-white/70 backdrop-blur-md text-slate-800 text-sm font-bold px-3 py-1.5 rounded-xl border border-white/80 shadow-apple-glass">
-                                  {post.vacancies} <span className="text-[10px] ml-1 uppercase opacity-60 font-semibold">Posts</span>
+                                  {post.vacancies[selectedCategory]} <span className="text-[10px] ml-1 uppercase opacity-60 font-semibold">Posts</span>
                                 </span>
                               </div>
                             </div>
@@ -580,7 +794,7 @@
                           
                           {/* Actions */}
                           <div className="flex gap-3 mt-5 pt-5 border-t border-white/30 relative z-10 pl-3">
-                            {post.hasCadreBreakdown && post.vacancies > 0 ? (
+                            {post.hasCadreBreakdown && post.vacancies[selectedCategory] > 0 ? (
                               <button 
                                 onClick={() => setSelectedPost(post.id)}
                                 className="flex-1 bg-white/60 backdrop-blur-md hover:bg-white/80 text-slate-700 font-medium py-2.5 rounded-2xl text-sm transition-all border border-white/80 shadow-apple-glass flex items-center justify-center gap-2"
@@ -634,15 +848,45 @@
                       <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Your Preference List</h2>
                       <p className="text-sm text-slate-500 mt-1 font-medium">Order your selected posts carefully. Top post is highest preference. <span className="inline-block bg-emerald-100/60 text-emerald-700 text-[10px] px-2 py-0.5 rounded-lg font-semibold ml-1 uppercase tracking-wider border border-emerald-200/50 shadow-sm"><i className="fa-solid fa-cloud-arrow-up mr-1"></i>Auto-saved</span></p>
                     </div>
-                    <div className="flex gap-3">
+                    
+                    {/* Submission / Copy Controls */}
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+                      
+                      <form onSubmit={handleSubmission} className="flex gap-2 w-full sm:w-auto">
+                        <input 
+                          type="text" 
+                          placeholder="Your Name" 
+                          required
+                          value={userName}
+                          onChange={(e) => setUserName(e.target.value)}
+                          className="bg-white/60 border border-white/80 shadow-apple-inset rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 w-full sm:w-40 text-slate-800 placeholder-slate-400"
+                        />
+                        <button 
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="flex items-center justify-center gap-2 bg-blue-500/90 backdrop-blur-md text-white hover:bg-blue-600/90 px-5 py-2.5 rounded-xl text-sm font-medium shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_8px_20px_rgba(59,130,246,0.3)] transition-all transform active:scale-95 border border-white/20 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isSubmitting ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-paper-plane opacity-80"></i>} 
+                          {isSubmitting ? 'Sending...' : 'Submit Data'}
+                        </button>
+                      </form>
+
                       <button 
                         onClick={copyToClipboard}
-                        className="flex items-center gap-2 bg-slate-800/90 backdrop-blur-md text-white hover:bg-slate-900/90 px-5 py-2.5 rounded-xl text-sm font-medium shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_8px_20px_rgba(0,0,0,0.1)] transition-all transform active:scale-95 border border-white/10"
+                        className="flex items-center justify-center gap-2 bg-slate-800/90 backdrop-blur-md text-white hover:bg-slate-900/90 px-4 py-2.5 rounded-xl text-sm font-medium shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_8px_20px_rgba(0,0,0,0.1)] transition-all transform active:scale-95 border border-white/10 whitespace-nowrap"
                       >
-                        <i className="fa-regular fa-copy opacity-80"></i> Copy Final List
+                        <i className="fa-regular fa-copy opacity-80"></i> Copy List
                       </button>
                     </div>
                   </div>
+
+                  {/* Submission Status Message */}
+                  {submitMessage && (
+                    <div className={`px-6 py-3 border-b border-white/50 text-sm font-medium flex items-center justify-between ${submitMessage.includes('Success') ? 'bg-emerald-50/80 text-emerald-800' : 'bg-rose-50/80 text-rose-800'}`}>
+                      <span>{submitMessage}</span>
+                      <button onClick={() => setSubmitMessage('')} className="opacity-50 hover:opacity-100"><i className="fa-solid fa-times"></i></button>
+                    </div>
+                  )}
 
                   <div className="p-6">
                     {preferences.length === 0 ? (
@@ -770,7 +1014,7 @@
             <p className="flex items-center justify-center gap-2 font-medium">
               Designed & Developed with <i className="fa-solid fa-heart text-rose-400"></i> by <span className="text-slate-800 font-semibold tracking-wide">Abhishek Jorwal</span>
             </p>
-            <p className="mt-3 text-xs opacity-80 max-w-lg mx-auto leading-relaxed">This tool is designed to assist ST category candidates in organizing their preferences. Data is sourced from official SSC vacancy PDFs. Always cross-check final choices with official SSC documentation.</p>
+            <p className="mt-3 text-xs opacity-80 max-w-lg mx-auto leading-relaxed">This tool is designed to assist all SSC CGL candidates in organizing their preferences. Data is sourced from official SSC vacancy PDFs. Always cross-check final choices with official SSC documentation.</p>
           </footer>
 
           {/* MODAL FOR STATE-WISE BREAKDOWN */}
@@ -788,7 +1032,7 @@
                       <h3 className="text-xl font-bold text-slate-800 leading-tight">
                         {postsData.find(p => p.id === selectedPost)?.name}
                       </h3>
-                      <p className="text-sm font-semibold text-slate-600 mt-0.5">ST Category State/Zone Breakup</p>
+                      <p className="text-sm font-semibold text-slate-600 mt-0.5">State/Zone Breakup</p>
                     </div>
                   </div>
                   <button 
@@ -821,7 +1065,7 @@
                     <thead className="bg-white/40 backdrop-blur-md text-slate-600 text-[11px] uppercase tracking-wider font-bold sticky top-0 z-10 shadow-sm border-b border-white/50">
                       <tr>
                         <th className="px-6 py-4">Zone / Cadre Location</th>
-                        <th className="px-6 py-4 text-right">ST Vacancies</th>
+                        <th className="px-6 py-4 text-right">{selectedCategory === 'Total' ? 'Total' : selectedCategory} Vacancies</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/30">
