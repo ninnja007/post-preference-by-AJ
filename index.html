@@ -312,53 +312,55 @@
 
     // Apple Liquid Glass Effect logic
     const getJobTypeTheme = (jobType) => {
+      // PERFORMANCE FIX: Removed heavy 'backdrop-blur' from individual cards.
+      // Replaced with highly optimized '95%' opacity gradients for a smooth frosted look without GPU lag.
       switch (jobType) {
         case 'Desk':
           return {
-            bg: 'bg-gradient-to-br from-blue-50/50 via-white/40 to-white/20 backdrop-blur-2xl backdrop-saturate-[1.5]',
+            bg: 'bg-gradient-to-br from-blue-50/95 to-white/95',
             border: 'border-white/80',
             accent: 'text-blue-600',
-            badgeBg: 'bg-white/60 shadow-apple-inset border border-white/80',
+            badgeBg: 'bg-white/80 shadow-sm border border-white',
             badgeText: 'text-blue-800',
             gradient: 'from-blue-100/50 to-transparent',
             indicator: 'bg-blue-500/80'
           };
         case 'Field/Uniform':
           return {
-            bg: 'bg-gradient-to-br from-emerald-50/50 via-white/40 to-white/20 backdrop-blur-2xl backdrop-saturate-[1.5]',
+            bg: 'bg-gradient-to-br from-emerald-50/95 to-white/95',
             border: 'border-white/80',
             accent: 'text-emerald-600',
-            badgeBg: 'bg-white/60 shadow-apple-inset border border-white/80',
+            badgeBg: 'bg-white/80 shadow-sm border border-white',
             badgeText: 'text-emerald-800',
             gradient: 'from-emerald-100/50 to-transparent',
             indicator: 'bg-emerald-500/80'
           };
         case 'Field/Desk Mix':
           return {
-            bg: 'bg-gradient-to-br from-purple-50/50 via-white/40 to-white/20 backdrop-blur-2xl backdrop-saturate-[1.5]',
+            bg: 'bg-gradient-to-br from-purple-50/95 to-white/95',
             border: 'border-white/80',
             accent: 'text-purple-600',
-            badgeBg: 'bg-white/60 shadow-apple-inset border border-white/80',
+            badgeBg: 'bg-white/80 shadow-sm border border-white',
             badgeText: 'text-purple-800',
             gradient: 'from-purple-100/50 to-transparent',
             indicator: 'bg-purple-500/80'
           };
         case 'Field':
           return {
-            bg: 'bg-gradient-to-br from-orange-50/50 via-white/40 to-white/20 backdrop-blur-2xl backdrop-saturate-[1.5]',
+            bg: 'bg-gradient-to-br from-orange-50/95 to-white/95',
             border: 'border-white/80',
             accent: 'text-orange-600',
-            badgeBg: 'bg-white/60 shadow-apple-inset border border-white/80',
+            badgeBg: 'bg-white/80 shadow-sm border border-white',
             badgeText: 'text-orange-800',
             gradient: 'from-orange-100/50 to-transparent',
             indicator: 'bg-orange-500/80'
           };
         default:
           return {
-            bg: 'bg-gradient-to-br from-slate-50/50 via-white/40 to-white/20 backdrop-blur-2xl backdrop-saturate-[1.5]',
+            bg: 'bg-gradient-to-br from-slate-50/95 to-white/95',
             border: 'border-white/80',
             accent: 'text-slate-600',
-            badgeBg: 'bg-white/60 shadow-apple-inset border border-white/80',
+            badgeBg: 'bg-white/80 shadow-sm border border-white',
             badgeText: 'text-slate-800',
             gradient: 'from-slate-100/50 to-transparent',
             indicator: 'bg-slate-400/80'
@@ -366,10 +368,43 @@
       }
     };
 
+    // --- NEW HELPERS FOR PRO FEATURES ---
+    const getCutoffTrend = (postCode) => {
+      const highCutoff = ['B09', 'B16', 'B15', 'B01', 'B17', 'B12', 'B02', 'B13', 'B08'];
+      const lowCutoff = ['D43', 'D55', 'D42', 'D44', 'D45', 'D46', 'D47', 'D48', 'D49', 'D50', 'D51', 'D52', 'D53', 'D54', 'D56', 'D57', 'D58'];
+      if (highCutoff.includes(postCode)) return { label: 'High Cutoff', color: 'text-rose-700 bg-rose-50 border-rose-200' };
+      if (lowCutoff.includes(postCode)) return { label: 'Low Cutoff', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' };
+      return { label: 'Medium Cutoff', color: 'text-amber-700 bg-amber-50 border-amber-200' };
+    };
+
+    const getJobProfileInfo = (post) => {
+      let info = { desc: '', pros: [], cons: [] };
+      if (post.jobType.includes('Field')) {
+        info.desc = 'Dynamic job involving inspections, public dealing, and executive duties. Commands high social respect.';
+        info.pros = ['High social status & power', 'Dynamic work environment', 'Allowances and uniform perks'];
+        info.cons = ['Irregular working hours possible', 'All-India transfer liability', 'Physical fitness required'];
+      } else {
+        info.desc = 'Stable desk job with fixed working hours. Ideal for candidates seeking work-life balance or preparing for UPSC.';
+        info.pros = ['Fixed 9-to-5 working hours', 'No physical strain', 'Often located in Metro cities / Delhi HQ'];
+        info.cons = ['Can be monotonous', 'Limited public dealing/power', 'Slower promotions in some departments'];
+      }
+      
+      if (post.department.includes('External Affairs')) {
+        info.desc = 'Premium SSC post. Offers foreign postings, high salary, and diplomatic perks.';
+        info.pros.push('Foreign Postings & Allowances', 'Children education perks');
+      }
+      if (post.department.includes('CSS')) {
+        info.desc = 'Evergreen choice. Permanent Delhi posting, fixed working hours, and fastest promotions among desk jobs.';
+        info.pros.push('Fast promotions to Section Officer', 'Permanent Delhi posting');
+      }
+      return info;
+    };
+
     function App() {
       const [activeTab, setActiveTab] = useState('browse');
       
-      const [selectedCategory, setSelectedCategory] = useState('Total'); // New Category State
+      const [searchQuery, setSearchQuery] = useState(''); // New Search State
+      const [selectedCategory, setSelectedCategory] = useState('Total');
       const [jobTypeFilter, setJobTypeFilter] = useState('All');
       const [payLevelFilter, setPayLevelFilter] = useState('All');
       const [locationFilter, setLocationFilter] = useState('All');
@@ -383,16 +418,24 @@
         return savedPrefs ? JSON.parse(savedPrefs) : [];
       });
 
-      // Submit Form State
+      // Submit Form & Toast State
       const [userName, setUserName] = useState('');
       const [isSubmitting, setIsSubmitting] = useState(false);
-      const [submitMessage, setSubmitMessage] = useState('');
+      const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+      const toastTimer = useRef(null);
+
+      const showToast = (message, type = 'success') => {
+        if (toastTimer.current) clearTimeout(toastTimer.current);
+        setToast({ show: true, message, type });
+        toastTimer.current = setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3000);
+      };
 
       useEffect(() => {
         localStorage.setItem('ssc_cgl_prefs_st', JSON.stringify(preferences));
       }, [preferences]);
       
       const [selectedPost, setSelectedPost] = useState(null);
+      const [profileModalPost, setProfileModalPost] = useState(null); // New Profile Modal State
       const [cadreSortType, setCadreSortType] = useState('vacancies');
 
       const dragItem = useRef(null);
@@ -410,9 +453,13 @@
             if (locationFilter === 'Delhi Only' && !post.posting.includes('Delhi')) return false;
             if (locationFilter === 'All India' && post.posting === 'Delhi') return false; 
           }
+          if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            if (!post.name.toLowerCase().includes(q) && !post.department.toLowerCase().includes(q) && !post.postCode.toLowerCase().includes(q)) return false;
+          }
           return true;
         });
-      }, [jobTypeFilter, payLevelFilter, locationFilter, cptFilter, ageFilter, colorBlindFilter, hideZeroVacancies, selectedCategory]);
+      }, [jobTypeFilter, payLevelFilter, locationFilter, cptFilter, ageFilter, colorBlindFilter, hideZeroVacancies, selectedCategory, searchQuery]);
 
       const addToPreferences = (post) => {
         if (!preferences.find(p => p.id === post.id)) {
@@ -456,10 +503,9 @@
         textArea.select();
         try {
           document.execCommand('copy');
-          alert("Preference list copied to clipboard! Paste it wherever you need it.");
+          showToast("Preference list copied to clipboard!", "success");
         } catch (err) {
-          console.error('Oops, unable to copy', err);
-          alert("Failed to copy. Please select the text manually.");
+          showToast("Failed to copy. Please try again.", "error");
         }
         document.body.removeChild(textArea);
       };
@@ -468,12 +514,11 @@
         e.preventDefault();
         
         if (preferences.length === 0) {
-          alert("Your preference list is empty! Please add posts first.");
+          showToast("Your preference list is empty! Please add posts first.", "error");
           return;
         }
 
         setIsSubmitting(true);
-        setSubmitMessage('');
 
         const formattedList = preferences.map((p, i) => `${i + 1}. [${p.postCode}] ${p.name}`).join('\n');
         const payload = {
@@ -496,17 +541,16 @@
           });
 
           if (response.ok) {
-            setSubmitMessage("Success! Your preferences have been submitted.");
+            showToast("Success! Your preferences have been submitted.", "success");
             setUserName('');
           } else {
-            setSubmitMessage("Oops! Something went wrong. Try again.");
+            showToast("Oops! Something went wrong. Try again.", "error");
           }
           
           setIsSubmitting(false);
 
         } catch (error) {
-          console.error("Submission error:", error);
-          setSubmitMessage("Network error. Please check your connection.");
+          showToast("Network error. Please check your connection.", "error");
           setIsSubmitting(false);
         }
       };
@@ -572,6 +616,14 @@
 
           <main className="flex-grow max-w-7xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8 relative z-10">
             
+            {/* Global Toast Notification */}
+            {toast.show && (
+              <div className={`fixed bottom-6 right-6 z-[100] animate-in slide-in-from-bottom-5 fade-in px-6 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 backdrop-blur-xl border ${toast.type === 'success' ? 'bg-emerald-900/90 border-emerald-500/30' : 'bg-rose-900/90 border-rose-500/30'}`}>
+                <i className={`fa-solid ${toast.type === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-circle-exclamation text-rose-400'} text-lg`}></i>
+                <span className="font-medium text-white text-sm tracking-wide">{toast.message}</span>
+              </div>
+            )}
+
             {activeTab === 'browse' && (
               <div className="flex flex-col lg:flex-row gap-8">
                 
@@ -586,6 +638,20 @@
                     </div>
                     
                     <div className="space-y-5">
+                      {/* Smart Search Bar */}
+                      <div>
+                        <div className="relative">
+                          <i className="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 text-sm"></i>
+                          <input 
+                            type="text" 
+                            placeholder="Search Post or Code..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full rounded-xl border border-blue-200/50 py-2.5 pl-9 pr-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/70 backdrop-blur-md outline-none transition-all font-medium text-slate-800 shadow-apple-inset placeholder-slate-400"
+                          />
+                        </div>
+                      </div>
+
                       <div>
                         <label className="block text-[11px] font-bold text-slate-800 uppercase tracking-wider mb-1.5">Candidate Category</label>
                         <select 
@@ -754,8 +820,11 @@
                               </div>
                             </div>
 
-                            {/* Alert/Warning Badges: Age, Physical, CB */}
+                            {/* Alert/Warning Badges: Age, Physical, CB, Cutoff */}
                             <div className="flex flex-wrap gap-2 mt-2 mb-4">
+                              <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full border shadow-sm uppercase tracking-wide ${getCutoffTrend(post.postCode).color}`}>
+                                <i className="fa-solid fa-arrow-trend-up opacity-70"></i> {getCutoffTrend(post.postCode).label}
+                              </span>
                               <span className="inline-flex items-center gap-1 bg-white/60 text-slate-700 text-[10px] font-semibold px-2.5 py-1 rounded-full border border-white/80 shadow-sm uppercase tracking-wide">
                                 <i className="fa-regular fa-clock opacity-60"></i> {post.ageLimit} yrs
                               </span>
@@ -794,12 +863,20 @@
                           
                           {/* Actions */}
                           <div className="flex gap-3 mt-5 pt-5 border-t border-white/30 relative z-10 pl-3">
+                            <button 
+                              onClick={() => setProfileModalPost(post)}
+                              className="flex-shrink-0 w-10 h-10 bg-white/60 backdrop-blur-md hover:bg-white/80 text-blue-600 font-medium rounded-xl transition-all border border-white/80 shadow-apple-glass flex items-center justify-center"
+                              title="View Job Profile"
+                            >
+                              <i className="fa-solid fa-circle-info text-lg"></i>
+                            </button>
+
                             {post.hasCadreBreakdown && post.vacancies[selectedCategory] > 0 ? (
                               <button 
                                 onClick={() => setSelectedPost(post.id)}
-                                className="flex-1 bg-white/60 backdrop-blur-md hover:bg-white/80 text-slate-700 font-medium py-2.5 rounded-2xl text-sm transition-all border border-white/80 shadow-apple-glass flex items-center justify-center gap-2"
+                                className="flex-1 bg-white/60 backdrop-blur-md hover:bg-white/80 text-slate-700 font-medium py-2 rounded-xl text-sm transition-all border border-white/80 shadow-apple-glass flex items-center justify-center gap-2"
                               >
-                                <i className="fa-solid fa-map-location-dot opacity-50"></i> Zone Breakup
+                                <i className="fa-solid fa-map-location-dot opacity-50"></i> Breakup
                               </button>
                             ) : (
                               <div className="flex-1"></div> 
@@ -807,7 +884,7 @@
                             
                             <button 
                               onClick={() => isAdded ? removeFromPreferences(post.id) : addToPreferences(post)}
-                              className={`flex-1 font-medium py-2.5 rounded-2xl text-sm transition-all flex items-center justify-center gap-2 transform active:scale-95 border ${
+                              className={`flex-1 font-medium py-2 rounded-xl text-sm transition-all flex items-center justify-center gap-2 transform active:scale-95 border ${
                                 isAdded 
                                   ? 'bg-white/60 backdrop-blur-md text-rose-500 hover:bg-rose-50/80 border-white/80 shadow-apple-glass' 
                                   : 'bg-blue-500/90 backdrop-blur-md text-white hover:bg-blue-600/90 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_8px_20px_rgba(59,130,246,0.3)] border-white/20'
@@ -880,15 +957,24 @@
                     </div>
                   </div>
 
-                  {/* Submission Status Message */}
-                  {submitMessage && (
-                    <div className={`px-6 py-3 border-b border-white/50 text-sm font-medium flex items-center justify-between ${submitMessage.includes('Success') ? 'bg-emerald-50/80 text-emerald-800' : 'bg-rose-50/80 text-rose-800'}`}>
-                      <span>{submitMessage}</span>
-                      <button onClick={() => setSubmitMessage('')} className="opacity-50 hover:opacity-100"><i className="fa-solid fa-times"></i></button>
-                    </div>
-                  )}
-
                   <div className="p-6">
+                    {preferences.length > 0 && (
+                      <div className="mb-6 grid grid-cols-3 gap-4 bg-white/40 p-4 rounded-2xl border border-white/60 shadow-apple-inset">
+                        <div className="text-center border-r border-white/50">
+                          <p className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Avg Pay Level</p>
+                          <p className="text-xl font-black text-blue-600 mt-0.5">{(preferences.reduce((acc, p) => acc + p.payLevel, 0) / preferences.length).toFixed(1)}</p>
+                        </div>
+                        <div className="text-center border-r border-white/50">
+                          <p className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Desk Jobs</p>
+                          <p className="text-xl font-black text-emerald-600 mt-0.5">{preferences.filter(p => p.jobType === 'Desk').length}</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Field Jobs</p>
+                          <p className="text-xl font-black text-orange-600 mt-0.5">{preferences.filter(p => p.jobType !== 'Desk').length}</p>
+                        </div>
+                      </div>
+                    )}
+
                     {preferences.length === 0 ? (
                       <div className="text-center py-16 flex flex-col items-center">
                         <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-white/60 backdrop-blur-md border border-white/80 shadow-apple-inset mb-6">
@@ -909,28 +995,29 @@
                           <i className="fa-solid fa-hand-pointer text-blue-500 opacity-80"></i> Drag and drop rows to set your exact priority order
                         </div>
                         
-                        {preferences.map((post, index) => {
-                          const theme = getJobTypeTheme(post.jobType);
-                          const deptIcon = getDeptIcon(post.department);
-                          
-                          return (
-                            <div 
-                              key={post.id} 
-                              draggable
-                              onDragStart={(e) => (dragItem.current = index)}
-                              onDragEnter={(e) => (dragOverItem.current = index)}
-                              onDragEnd={handleSort}
-                              onDragOver={(e) => e.preventDefault()}
-                              className={`flex items-center gap-4 p-4 ${theme.bg} border ${theme.border} rounded-[1.5rem] hover:shadow-apple-glass transition-all group relative overflow-hidden cursor-grab active:cursor-grabbing border-l-[6px] ${theme.border.replace('border-', 'border-l-')} ${theme.indicator.replace('bg-', 'border-l-')}`}
-                            >
-                              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-white/0 via-white to-white/0 opacity-60"></div>
+                        <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar pb-4">
+                          {preferences.map((post, index) => {
+                            const theme = getJobTypeTheme(post.jobType);
+                            const deptIcon = getDeptIcon(post.department);
+                            
+                            return (
+                              <div 
+                                key={post.id} 
+                                draggable
+                                onDragStart={(e) => (dragItem.current = index)}
+                                onDragEnter={(e) => (dragOverItem.current = index)}
+                                onDragEnd={handleSort}
+                                onDragOver={(e) => e.preventDefault()}
+                                className={`flex items-center gap-4 p-4 ${theme.bg} border ${theme.border} rounded-[1.5rem] hover:shadow-apple-glass transition-all group relative overflow-hidden cursor-grab active:cursor-grabbing border-l-[6px] ${theme.border.replace('border-', 'border-l-')} ${theme.indicator.replace('bg-', 'border-l-')}`}
+                              >
+                                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-white/0 via-white to-white/0 opacity-60"></div>
 
-                              <div className="flex-shrink-0 flex items-center gap-3 relative z-10 w-16">
-                                <i className="fa-solid fa-grip-vertical text-slate-400 group-hover:text-slate-600 cursor-grab px-1 transition-colors"></i>
-                                <div className="w-8 h-8 rounded-full bg-white/80 text-slate-700 font-bold text-sm shadow-apple-inset flex items-center justify-center border border-white/60">
-                                  {index + 1}
+                                <div className="flex-shrink-0 flex items-center gap-3 relative z-10 w-16">
+                                  <i className="fa-solid fa-grip-vertical text-slate-400 group-hover:text-slate-600 cursor-grab px-1 transition-colors"></i>
+                                  <div className="w-8 h-8 rounded-full bg-white/80 text-slate-700 font-bold text-sm shadow-apple-inset flex items-center justify-center border border-white/60">
+                                    {index + 1}
+                                  </div>
                                 </div>
-                              </div>
                               
                               <div className={`hidden sm:flex flex-shrink-0 w-12 h-12 rounded-xl items-center justify-center ${theme.badgeBg} ${theme.accent} relative z-10`}>
                                 <i className={`fa-solid ${deptIcon} text-lg opacity-80`}></i>
@@ -985,8 +1072,9 @@
                                 </button>
                               </div>
                             </div>
-                          );
-                        })}
+                            );
+                          })}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1121,6 +1209,50 @@
                   </button>
                 </div>
 
+              </div>
+            </div>
+          )}
+
+          {/* MODAL FOR JOB PROFILE */}
+          {profileModalPost && (
+            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[60] flex items-center justify-center p-4 transition-opacity">
+              <div className="bg-white/90 backdrop-blur-2xl backdrop-saturate-150 rounded-[2rem] shadow-apple-glass border border-white w-full max-w-lg flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+                <div className="p-6 border-b border-slate-200/50 bg-gradient-to-r from-blue-50/50 to-white/50">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded-lg tracking-widest shadow-sm">{profileModalPost.postCode}</span>
+                    <button onClick={() => setProfileModalPost(null)} className="w-8 h-8 flex items-center justify-center text-slate-400 bg-white hover:bg-slate-100 rounded-full transition-colors shadow-sm">
+                      <i className="fa-solid fa-times"></i>
+                    </button>
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-800 leading-tight mb-1">{profileModalPost.name}</h3>
+                  <p className="text-slate-600 font-medium flex items-center gap-2"><i className={`fa-solid ${getDeptIcon(profileModalPost.department)} opacity-50`}></i> {profileModalPost.department}</p>
+                </div>
+                
+                <div className="p-6 bg-white/40 space-y-6">
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Job Overview</h4>
+                    <p className="text-slate-700 leading-relaxed font-medium text-sm">{getJobProfileInfo(profileModalPost).desc}</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-4 shadow-apple-inset">
+                      <h4 className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-3 flex items-center gap-2"><i className="fa-solid fa-thumbs-up"></i> Pros</h4>
+                      <ul className="space-y-2 text-xs font-medium text-slate-700">
+                        {getJobProfileInfo(profileModalPost).pros.map((pro, i) => (
+                          <li key={i} className="flex items-start gap-2"><i className="fa-solid fa-check text-emerald-500 mt-0.5"></i> <span>{pro}</span></li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="bg-rose-50/50 border border-rose-100 rounded-2xl p-4 shadow-apple-inset">
+                      <h4 className="text-xs font-bold text-rose-600 uppercase tracking-wider mb-3 flex items-center gap-2"><i className="fa-solid fa-thumbs-down"></i> Cons</h4>
+                      <ul className="space-y-2 text-xs font-medium text-slate-700">
+                        {getJobProfileInfo(profileModalPost).cons.map((con, i) => (
+                          <li key={i} className="flex items-start gap-2"><i className="fa-solid fa-minus text-rose-400 mt-0.5"></i> <span>{con}</span></li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
